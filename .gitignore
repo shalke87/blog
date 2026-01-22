@@ -33,3 +33,6 @@ coverage/
 
 # Nodemon artifacts
 *.pid
+
+# Bruno-APIs
+bruno-blog-api/

@@ -1,16 +1,8 @@
-import { verifyToken } from "../../utils/jwt.js";
 import PostActions from "./actions/PostActions.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 export default function socketApi(io) {
-    io.use((socket, next) => {
-        try {
-            const token = socket.handshake.auth.token;
-            socket.user = verifyToken(token);
-            next();
-        } catch {
-            next(new Error("Unauthorized"));
-        }
-    });
+    io.use(authMiddleware);
 
     io.on("connection", (socket) => {
         PostActions(socket);

@@ -1,20 +1,16 @@
 import express from "express";
-import http from "http";
-import { Server } from "socket.io";
-
 import apiRouter from "./api/apiRouter.js";
-import socketApi from "./api/socket/socketApi.js";
+import errorHandler from "./api/middlewares/errorHandler.js";
 
 const app = express();
 app.use(express.json());
 
-// REST
-app.use("/api", apiRouter);
+app.use("", apiRouter);
 
-// SOCKET.IO
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+// error handler (sempre per ultimo) 
+app.use(errorHandler);
 
-socketApi(io);
+export default app;
 
-export default server;
+
+
