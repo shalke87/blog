@@ -11,8 +11,4 @@ const schema = Joi.object({
 
 });
 
-export default {
-    validate(payload) {
-        return validate(schema, payload);
-    }
-};
+export default validate(schema);

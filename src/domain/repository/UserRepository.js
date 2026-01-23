@@ -5,9 +5,21 @@ export default {
         console.log("Creating user with data:", data);
         try{
             const result = await UserModel.create(data);
-            return result;
+            console.log("User created:", result);
+            return result.toObject();
         } catch (error) {
             console.error("Error creating user:", error);
+            throw error;
+        }
+    },
+
+    async findUserByEmail(email) {
+        console.log("Finding user with email:", email);
+        try{
+            const result = await UserModel.findOne({ email });
+            return result.toObject();
+        } catch (error) {
+            console.error("Error fetching user:", error);
             throw error;
         }
     }

@@ -2,8 +2,8 @@ import Joi from "joi";
 import validate from "./BaseValidator.js";
 
 const schema = Joi.object({
-    username: Joi.string().required(),
     email: Joi.string().email().required(),
+    password: Joi.string().required()
 });
 
 export default validate(schema);

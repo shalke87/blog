@@ -1,16 +1,13 @@
-export default function validate(schema, payload) {
-    const { value, error } = schema.validate(payload, {
-        abortEarly: false,
-        stripUnknown: true
-    });
+
+export default function validate(schema) {
+  return (req, res, next) => {
+    const { error, value } = schema.validate(req.body, { abortEarly: false });
 
     if (error) {
-        const errorMessages = error.details.map(d => d.message);
-        const err = new Error("Validation error");
-        err.status = 400;
-        err.details = errorMessages;
-        throw err;
+      return next(error); // ✔ Joi intercetta l’errore
     }
 
-    return value;
+    req.body = value; // body sanitizzato
+    next();
+  };
 }

@@ -9,5 +9,9 @@ export default {
 
     hashPassword(password) {
         return bcrypt.hashSync(password, parseInt(process.env.BCRYPT_SALT_ROUNDS));
+    },
+
+    comparePassword(password, hashedPassword) {
+        return bcrypt.compareSync(password, hashedPassword);
     }
 };
