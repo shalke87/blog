@@ -1,13 +1,21 @@
 
-export default function validate(schema) {
+export default function validate(schema, source = 'body') {
   return (req, res, next) => {
-    const { error, value } = schema.validate(req.body, { abortEarly: false });
+    const data = req[source];
+    console.log(`Validating request ${source}:`, data);
+    const { error, value } = schema.validate(data, { abortEarly: false });
+
+
 
     if (error) {
       return next(error); // ✔ Joi intercetta l’errore
     }
 
-    req.body = value; // body sanitizzato
+    if (source === "query" || source === "params") { 
+      Object.assign(req[source], value); 
+    } else { 
+      req[source] = value; // body è scrivibile 
+    }
     next();
   };
 }

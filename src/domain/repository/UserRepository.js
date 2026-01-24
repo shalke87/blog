@@ -4,9 +4,9 @@ export default {
     async createUser(data) {
         console.log("Creating user with data:", data);
         try{
-            const result = await UserModel.create(data);
-            console.log("User created:", result);
-            return result.toObject();
+            const user = await UserModel.create(data);
+            console.log("User created:", user);
+            return user.toObject();
         } catch (error) {
             console.error("Error creating user:", error);
             throw error;
@@ -16,10 +16,42 @@ export default {
     async findUserByEmail(email) {
         console.log("Finding user with email:", email);
         try{
-            const result = await UserModel.findOne({ email });
-            return result.toObject();
+            const user = await UserModel.findOne({ email });
+            return user.toObject();
         } catch (error) {
             console.error("Error fetching user:", error);
+            throw error;
+        }
+    },
+
+    async findUserByResetTokenAndDate(token, date) {
+        try{
+            console.log("Finding user with reset token:", token, date);
+            const user = await UserModel.findOne({ resetToken: token, resetTokenExpiration: { $gt: date } });
+            if(!user) {
+                return null;
+            }
+            return user.toObject();
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            throw error;
+        }
+    },
+
+    async storeResetToken(email, token, expiration) {
+        console.log(`Storing hashed reset token for email: ${email}`, token, expiration);
+        try {
+            const result = await UserModel.findOneAndUpdate(
+                { email },
+                { resetToken: token, resetTokenExpiration: expiration },
+                { new: true }
+            );
+            if (!result) {
+                return null;
+            }
+            return result.toObject();
+        } catch (error) {
+            console.error("Error storing reset token:", error);
             throw error;
         }
     }

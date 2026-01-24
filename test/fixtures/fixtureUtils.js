@@ -29,12 +29,17 @@ class fixtureUtils {
   }
 
   async createUser(userData) {
-    await userModel.create({
-      username: userData.username || "testuser",
-      email: userData.email || "test@example.com",
-      hashedPassword: cryptoUtils.hashPassword(userData.password || "Password01!", process.env.BCRYPT_SALT_ROUNDS),
-      createdAt: new Date()
-    });
+      const userToStore = {...userData};
+      userToStore.username = userData.username || "testuser";
+      userToStore.email = userData.email || "test@example.com";
+      userToStore.hashedPassword = cryptoUtils.hashPassword(userData.password || "Password01!", process.env.BCRYPT_SALT_ROUNDS);
+      userToStore.createdAt = userData.createdAt || new Date();
+   
+    await userModel.create(userToStore);
+  }
+
+  async getUsers() {
+    return await userModel.find();
   }
 
 }

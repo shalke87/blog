@@ -10,7 +10,7 @@ export default function errorHandler(err, req, res, next) {
         message: 'Internal Server Error'
     };
 
-    if (err.status !== 500) {
+    if (status !== 500) {
         errObject.message = err.message;
         errObject.details = err.details;
     }

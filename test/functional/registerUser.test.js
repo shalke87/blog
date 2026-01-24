@@ -65,7 +65,9 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         // inserisce l'utente nel DB in-memory
-        fixtureUtils.createUser(userData);
+        await fixtureUtils.createUser(userData);
+
+        console.log("Verifico utente creato nel DB in memory:", await UserModel.find({}));
 
         const res = await request(app)
         .post("/auth/register")

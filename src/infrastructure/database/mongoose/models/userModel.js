@@ -22,8 +22,12 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        retrievePasswordHashedToken: {
+        resetToken: {
             type: String,
+            required: false
+        },
+        resetTokenExpiration: {
+            type: Date,
             required: false
         },
         createdAt: {
