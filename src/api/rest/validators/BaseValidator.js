@@ -2,7 +2,7 @@
 export default function validate(schema, source = 'body') {
   return (req, res, next) => {
     const data = req[source];
-    console.log(`Validating request ${source}:`, data);
+    console.log(`Validating request ${source}:`, data);   //da togliere in produzione
     const { error, value } = schema.validate(data, { abortEarly: false });
 
 

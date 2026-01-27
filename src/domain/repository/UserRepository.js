@@ -13,10 +13,42 @@ export default {
         }
     },
 
-    async findUserByEmail(email) {
-        console.log("Finding user with email:", email);
+    async findUserBy(query) {
+        console.log("Finding user with query:", query);
+        try {
+            const user = await UserModel.findOne(query);
+            return user ? user.toObject() : null;
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            throw error;
+        }
+    },
+
+
+
+    async updateUserById(userId, updateData) {
+        console.log("Updating user for userId:", userId, "with data:", updateData);
         try{
-            const user = await UserModel.findOne({ email });
+            const user = await UserModel.findOneAndUpdate({ _id: userId }, updateData, { new: true});
+            if(!user) {
+                return null;
+            }
+            return user.toObject();
+        } catch (error) {
+            console.error("Error updating user:", error);
+            throw error;
+        }
+    },
+
+
+
+    async findUserByResetTokenAndDate(token, date) {
+        try{
+            console.log("Finding user with reset token:", token, date);
+            const user = await UserModel.findOne({ resetToken: token, resetTokenExpiration: { $gt: date } });
+            if(!user) {
+                return null;
+            }
             return user.toObject();
         } catch (error) {
             console.error("Error fetching user:", error);
@@ -24,10 +56,10 @@ export default {
         }
     },
 
-    async findUserByResetTokenAndDate(token, date) {
+    async updateUserByResetTokenAndDate(token, date, updateData) {
         try{
-            console.log("Finding user with reset token:", token, date);
-            const user = await UserModel.findOne({ resetToken: token, resetTokenExpiration: { $gt: date } });
+            console.log("Finding user with reset token for psw update:", token, date);
+            const user = await UserModel.findOneAndUpdate({ resetToken: token, resetTokenExpiration: { $gt: date } }, updateData, { new: true });
             if(!user) {
                 return null;
             }

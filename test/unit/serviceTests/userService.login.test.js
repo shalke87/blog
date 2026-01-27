@@ -18,17 +18,19 @@ describe("UserService.login", () => {
   });
 
   describe("UserService.login success", () => {
-    it("dovrebbe verificare se un utente esiste nel sistema, confrontare la password e restituire l'utente", async () => {
+    it("dovrebbe verificare se un utente esiste nel sistema, confrontare la password e restituire l'utente e il token JWT", async () => {
 
       const loginData = { email: "test@example.com", password: "Password01!" };
       const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(loginData.password, process.env.BCRYPT_SALT_ROUNDS) };
 
-      sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
+      sinon.stub(UserRepository, "findUserBy").resolves(userinDB);
 
       const result = await UserService.login(loginData);
 
-      expect(result.email).to.deep.equal(loginData.email);
-      expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
+      expect(result.userData.email).to.deep.equal(loginData.email);
+      expect(UserRepository.findUserBy).to.have.been.calledOnce;
+      expect(result).to.have.property("tokenJWT");
+      expect(result.tokenJWT).to.deep.equal(cryptoUtils.generateJWT({ userId: userinDB._id }));
     });
   });
 
@@ -38,14 +40,14 @@ describe("UserService.login", () => {
       const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, process.env.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "test@example.com", password: "wrongPassword!" };
 
-      sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
+      sinon.stub(UserRepository, "findUserBy").resolves(userinDB);
 
       const result = await UserService.login(loginData).catch((error) => {
         expect(error).to.be.instanceOf(UnauthorizedError);
         expect(error.message).to.equal("Email or password incorrect");
       });
 
-      expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
+      expect(UserRepository.findUserBy).to.have.been.calledOnce;
     });
 
     it("dovrebbe fallire se l'utente non esiste", async () => {
@@ -53,14 +55,14 @@ describe("UserService.login", () => {
       const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, process.env.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "wrongEmail@example.com", password: "Password01!" };
 
-      sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
+      sinon.stub(UserRepository, "findUserBy").resolves(userinDB);
 
       const result = await UserService.login(loginData).catch((error) => {
         expect(error).to.be.instanceOf(UnauthorizedError);
         expect(error.message).to.equal("Email or password incorrect");
       });
 
-      expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
+      expect(UserRepository.findUserBy).to.have.been.calledOnce;
     });
   });
 

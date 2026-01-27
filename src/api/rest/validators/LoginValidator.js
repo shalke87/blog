@@ -1,9 +1,0 @@
-import Joi from "joi";
-import validate from "./BaseValidator.js";
-
-const schema = Joi.object({
-    username: Joi.string().required(),
-    email: Joi.string().email().required(),
-});
-
-export default validate(schema);

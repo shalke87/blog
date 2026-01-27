@@ -3,7 +3,7 @@ class UnauthorizedError extends Error {
         super(message);
         this.name = 'UnauthorizedError';
         this.status = 401;
-        this.message = 'Email or password incorrect';
+        this.message = message ||'Email or password incorrect';
     }
 }
 

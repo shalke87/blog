@@ -78,9 +78,9 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
 
         console.log("verifico res.body per privacy:", res.body);
         // Verifica risposta
-        expect(res.status).to.equal(400);
+        expect(res.status).to.equal(401);
         expect(res.body.message).to.be.equal("Invalid or expired reset token");
-        expect(res.body).to.deep.equal({ status: 400, message: 'Invalid or expired reset token' }); // verifica che non venga restituito altri dati
+        expect(res.body).to.deep.equal({ status: 401, message: 'Invalid or expired reset token' }); // verifica che non venga restituito altri dati
 
     });
 
@@ -129,7 +129,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
 
         // Verifica risposta
         const expectedMessage = "Invalid or expired reset token";
-        expect(res.status).to.equal(400);
+        expect(res.status).to.equal(401);
         expect(res.body.message).to.be.equal(expectedMessage);
 
     });

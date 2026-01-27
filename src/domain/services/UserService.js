@@ -9,7 +9,7 @@ import BadRequestError from '../errors/BadRequestError.js';
 
 export default {
     async register(data) {
-        console.log("Data received for registration:", data);
+        console.log("Data received for registration:", data);  // da cancellare assolutamente
         const { username, email, password } = data;
         const hashedPassword = cryptoUtils.hashPassword(password);
         try{
@@ -28,9 +28,9 @@ export default {
     },
 
     async login(data) {
-        console.log("Data received for login:", data);
+        console.log("Data received for login:", data); // da cancellare assolutamente
         const { email, password } = data;
-        const user = await UserRepository.findUserByEmail(email);
+        const user = await UserRepository.findUserBy({ email });
         if (!user) {
             throw new UnauthorizedError('Email or password incorrect');
         }
@@ -39,8 +39,11 @@ export default {
         if (!isPasswordValid) {
             throw new UnauthorizedError('Email or password incorrect');
         }
+
+        const tokenJWT = cryptoUtils.generateJWT({ userId: user._id });
+        console.log("Generated JWT token:", tokenJWT);
         const {hashedPassword, ...userData} = user;
-        return userData; //return user data without password
+        return {userData, tokenJWT}; //return and object with user data without password and the token
     },
 
     async resetPasswordRequest(data) {
@@ -66,10 +69,66 @@ export default {
         
         if (!user){
             console.log("No user found with the provided reset token. in service");
-            throw new BadRequestError('Invalid or expired reset token');
+            throw new UnauthorizedError('Invalid or expired reset token');
         }
 
         const {hashedPassword, resetToken, resetTokenExpiration, ...userData} = user;
+        return userData; //return user data without password
+    },
+
+    async resetUpdatePassword(data) {
+        console.log("Token received for resetUpdatePassword:", data.token);
+        const hashedToken = cryptoUtils.hashData(data.token);
+        const hashedNewPassword = cryptoUtils.hashPassword(data.newPassword);
+        const user = await UserRepository.updateUserByResetTokenAndDate(hashedToken, new Date(), { 
+            hashedPassword: hashedNewPassword,
+            resetToken: null,
+            resetTokenExpiration: null
+        });
+        
+        if (!user){
+            console.log("No user found with the provided reset token. in service");
+            throw new UnauthorizedError('Invalid or expired reset token');
+        }
+
+        const {hashedPassword, resetToken, resetTokenExpiration, ...userData} = user;
+        return userData; //return user data without password and reset stuff
+    },
+
+    async updatePassword(userId, data) {
+        console.log("Data received for updatePassword:", data);  // da cancellare assolutamente 
+        const hashedOldPassword = cryptoUtils.hashPassword(data.oldPassword);
+        const hashedNewPassword = cryptoUtils.hashPassword(data.newPassword);
+        const user = await UserRepository.findUserBy({_id: userId});
+        if(!user){
+            console.log("User not found with userId:", userId);
+            throw new NotFoundError('User not found');
+        }
+        const validPassword = cryptoUtils.comparePassword(data.oldPassword, user.hashedPassword);
+        if (!validPassword){
+            console.log("Old password does not match for userId:", userId);
+            throw new BadRequestError('Old password is incorrect');
+        }
+        
+        const updatedUser = await UserRepository.updateUserById(userId, { hashedPassword: hashedNewPassword });
+        if (!updatedUser){
+            console.log("Failed to update password for userId:", userId);
+            throw new Error('Failed to update password');
+        }
+
+        const {hashedPassword, resetToken, resetTokenExpiration, ...userData} = user;
+        return userData; //return user data without password and reset stuff
+    },
+
+    async updateUsername(userId, data) {
+        console.log("Data received for updateUsername:", data);
+        const user = await UserRepository.updateUserById(userId, { username: data.username });
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+        console.log("User found:", user);
+        
+        const {hashedPassword, ...userData} = user;
         return userData; //return user data without password
     },
 
