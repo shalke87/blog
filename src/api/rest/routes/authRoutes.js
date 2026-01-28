@@ -7,6 +7,7 @@ import ResetTokenValidator from "../validators/authValidators/ResetTokenValidato
 import ResetUpdatePasswordValidator from "../validators/authValidators/ResetUpdatePasswordValidator.js";
 import { loginRateLimiter } from "../../middlewares/loginRateLimiter.js";
 
+
 const router = Router();
 
 router.post("/register", RegisterValidator, AuthController.register);
@@ -14,6 +15,7 @@ router.post("/login", LoginValidator, loginRateLimiter, AuthController.login);
 router.get("/resetPassword/confirm", ResetTokenValidator, AuthController.resetPasswordConfirm);
 router.patch("/resetPassword/updatePassword", ResetUpdatePasswordValidator, AuthController.resetUpdatePassword);
 router.post("/resetPassword", ResetPasswordRequestValidator, AuthController.resetPasswordRequest);
+
 
 
 

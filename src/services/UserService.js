@@ -1,11 +1,12 @@
-import UserRepository from '../repository/UserRepository.js';
-import cryptoUtils from '../../infrastructure/security/cryptoUtils.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
-import ConflictError from '../errors/ConflictError.js';
-import config from '../../../config/config.js';
-import emailConfig from '../../../config/emailConfig.js';
-import EmailFactory from '../../infrastructure/email/EmailFactory.js';
-import BadRequestError from '../errors/BadRequestError.js';
+import UserRepository from '../domain/repository/UserRepository.js';
+import cryptoUtils from '../infrastructure/security/cryptoUtils.js';
+import UnauthorizedError from '../domain/errors/UnauthorizedError.js';
+import ConflictError from '../domain/errors/ConflictError.js';
+import config from '../../config/config.js';
+import emailConfig from '../../config/emailConfig.js';
+import EmailFactory from '../infrastructure/email/EmailFactory.js';
+import BadRequestError from '../domain/errors/BadRequestError.js';
+import NotFoundError from '../domain/errors/NotFoundError.js';
 
 export default {
     async register(data) {
@@ -128,6 +129,32 @@ export default {
         }
         console.log("User found:", user);
         
+        const {hashedPassword, ...userData} = user;
+        return userData; //return user data without password
+    },
+
+    async uploadAvatar(userId, data) {
+        console.log("Data received for uploadAvatar:", data);
+        const fileName = data.filename;
+        const avatarURL = config.AVATAR.PUBLIC_PATH + fileName; 
+        const user = await UserRepository.updateUserById(userId, { avatarURL: avatarURL });
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+        console.log("User found:", user);
+        
+        const {hashedPassword, ...userData} = user;
+        return userData; //return user data without password
+    },
+
+    async deleteAvatar(userId) {
+        console.log("Deleting avatar for userId:", userId);
+        const user = await UserRepository.updateUserById(userId, { avatarURL: null });
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+        console.log("User found:", user);
+        //da implementare cancellazione file fisico se necessario        
         const {hashedPassword, ...userData} = user;
         return userData; //return user data without password
     },

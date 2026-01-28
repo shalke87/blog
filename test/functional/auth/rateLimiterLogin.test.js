@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
-import app from "../../src/app.js";
+import app from "../../../src/app.js";
 import { expect } from "chai";
-import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import fixtureUtils from "../fixtures/fixtureUtils.js";
+import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
+import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import { config } from "dotenv";
-import configFile from "../../config/config.js";
+import configFile from "../../../config/config.js";
 
 
 describe("Functional login test con rate limiter: POST /auth/login ", () => {

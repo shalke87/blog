@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
-import app from "../../src/app.js";
-import UserModel from "../../src/infrastructure/database/mongoose/models/userModel.js";
+import app from "../../../src/app.js";
+import UserModel from "../../../src/infrastructure/database/mongoose/models/userModel.js";
 import { expect } from "chai";
-import fixtureUtils from "../fixtures/fixtureUtils.js";
-import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
+import fixtureUtils from "../../fixtures/fixtureUtils.js";
+import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 
 
 describe("Functional test: POST /auth/resetPassword/confirm ", () => {

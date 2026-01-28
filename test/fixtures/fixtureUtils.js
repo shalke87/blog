@@ -2,6 +2,7 @@ import sinon from "sinon";
 import * as chai from "chai";
 import sinonChai from "sinon-chai";
 import userModel from "../../src/infrastructure/database/mongoose/models/userModel.js";
+import postModel from "../../src/infrastructure/database/mongoose/models/postModel.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
 
@@ -34,7 +35,6 @@ class fixtureUtils {
     userToStore.email = userData.email || "test@example.com";
     userToStore.hashedPassword = cryptoUtils.hashPassword(userData.password || "Password01!", process.env.BCRYPT_SALT_ROUNDS);
     userToStore.createdAt = userData.createdAt || new Date();
-   
     return await userModel.create(userToStore);
   }
 
@@ -42,6 +42,42 @@ class fixtureUtils {
     return await userModel.find();
   }
 
+  async getPosts(param = {}) {
+    return await postModel.find();
+  }
+
+  async createPost(postData) {
+    const postToStore = {...postData};
+    postToStore.title = postData.title || "testpost";
+    postToStore.content = postData.content || "<p>Test content</p>";
+    postToStore.owner = postData.owner;
+    postToStore.createdAt = postData.createdAt || new Date();
+    return await postModel.create(postToStore);
+  }
+
+  async createPostWithAuthorAndPayload(username = "testuser", email = "test@example.com") {
+    const userToStore = {
+              username: username,
+              email: email,
+              password: "Password01!",
+              avatarURL: "/uploads/avatars/test_avatar.png"
+            };
+          const userStored = await this.createUser(userToStore);  //inserisce un utente nel DB in memoria
+          const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+    
+          const existingPost = await this.createPost({
+            title: "Titolo originale del post",
+            content: "<p>Contenuto originale del post.</p>",
+            author: userStored._id
+          });
+          
+          const newPostPayload = {
+              title: "Titolo del post",
+              content: "<p>Questo è un contenuto di test in rich text.</p>",
+              tags: [],        // oppure array di ObjectId se vuoi testare i tag
+          };
+          return { newPostPayload, existingPost, token};
+  }
 }
 
 

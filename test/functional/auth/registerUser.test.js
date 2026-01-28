@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
-import app from "../../src/app.js";
-import UserModel from "../../src/infrastructure/database/mongoose/models/userModel.js";
+import app from "../../../src/app.js";
+import UserModel from "../../../src/infrastructure/database/mongoose/models/userModel.js";
 import { expect } from "chai";
-import fixtureUtils from "../fixtures/fixtureUtils.js";
+import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
 describe("Functional test: POST /auth/register con DB mockato in-memory", () => {
   let mongo;

@@ -4,7 +4,7 @@ import sinonChai from "sinon-chai";
 chai.use(sinonChai);
 const { expect } = chai;
 
-import UserService from "../../../src/domain/services/UserService.js";
+import UserService from "../../../src/services/UserService.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import { ObjectId } from "mongodb";

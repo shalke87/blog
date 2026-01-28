@@ -1,4 +1,4 @@
-import UserService from "../../../domain/services/UserService.js";
+import UserService from "../../../services/UserService.js";
 
 export default {
     async register(req, res, next) {

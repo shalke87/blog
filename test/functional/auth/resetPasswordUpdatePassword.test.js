@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
-import app from "../../src/app.js";
+import app from "../../../src/app.js";
 import { expect } from "chai";
-import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import fixtureUtils from "../fixtures/fixtureUtils.js";
+import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
+import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
 
 describe("Functional test: POST /auth/resetPassword/updatePassword ", () => {

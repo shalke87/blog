@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
-import app from "../../src/app.js";
+import app from "../../../src/app.js";
 import { expect } from "chai";
-import fixtureUtils from "../fixtures/fixtureUtils.js";
+import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
 
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha \"test/**/*.test.js\" --timeout 5000 --recursive",
+    "test": "NODE_ENV=test mocha \"test/**/*.test.js\" --timeout 5000 --recursive",
     "dev": "nodemon src/server.js"
   },
   "keywords": [],
