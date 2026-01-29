@@ -38,5 +38,18 @@ export default {
             console.error("Error deleting post:", error);
             throw error;
         }
+    },
+
+    async getPostById(postId) {
+        try{
+            const post = await PostModel.findById(postId);
+            if (!post) {
+                return null;
+            }
+            return post.toObject();
+        } catch (error) {
+            console.error("Error retrieving post by ID:", error);
+            throw error;
+        }
     }
 }

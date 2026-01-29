@@ -52,6 +52,109 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
       expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
     });
+
+    it("modifica i tag di un post - aggiunge nuovi tag e restituisce 200", async () => { 
+          const userToStore = {
+              username: "testuser",
+              email: "test@example.com",
+              password: "Password01!",
+              avatarURL: "/uploads/avatars/test_avatar.png",
+            };
+          const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+          const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+          
+          const newPostPayload = {
+              title: "Titolo del post",
+              content: "<p>Questo è un contenuto di test in rich text.</p>",
+              tags: ["tag3", "tag4"],        // oppure array di ObjectId se vuoi testare i tag
+          };
+
+        const postToStore = {
+              title: "Titolo del post",
+              content: "<p>Questo è un contenuto di test in rich text.</p>",
+              author: userStored._id,
+              tags: ["tag1", "tag2"],        // oppure array di ObjectId se vuoi testare i tag
+          };
+          const existingPost = await fixtureUtils.createPost(postToStore);
+    
+          const res = await request(app) 
+          .patch("/post/update/" + existingPost._id) 
+          .set("Authorization", `Bearer ${token}`) 
+          .send(newPostPayload);
+    
+          const tagsInDB = await fixtureUtils.getTags();
+          const tagsInDBNames = tagsInDB.map(tag => tag.name);
+          const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
+          console.log("Tags in DB after update:", tagsInDB);
+          console.log("Response tags IDs:",  res.body.tags);
+          const normalizedPayloadTags = newPostPayload.tags.map(t => t.trim().toLowerCase()); 
+                
+          normalizedPayloadTags.forEach( tag => {
+            expect(tagsInDBNames).to.include(tag);
+          });
+          res.body.tags.forEach( tagId => {
+            expect(tagsInDBIds).to.include(tagId);
+          });
+          
+    
+    
+          expect(res.status).to.equal(200);
+          expect(res.body.title).to.equal(newPostPayload.title);
+          expect(res.body.content).to.equal(newPostPayload.content);
+          expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
+          expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+        });
+
+        it("modifica i tag di un post - passa oggetto con tags non valorizzati", async () => { 
+          const userToStore = {
+              username: "testuser",
+              email: "test@example.com",
+              password: "Password01!",
+              avatarURL: "/uploads/avatars/test_avatar.png",
+            };
+          const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+          const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+          
+          const newPostPayload = {
+              title: "Titolo del post",
+              content: "<p>Questo è un contenuto di test in rich text.</p>"
+          };
+
+        const postToStore = {
+              title: "Titolo del post",
+              content: "<p>Questo è un contenuto di test in rich text.</p>",
+              author: userStored._id,
+              tags: ["tag1", "tag2"],        // oppure array di ObjectId se vuoi testare i tag
+          };
+          const existingPost = await fixtureUtils.createPost(postToStore);
+    
+          const res = await request(app) 
+          .patch("/post/update/" + existingPost._id) 
+          .set("Authorization", `Bearer ${token}`) 
+          .send(newPostPayload);
+    
+          const tagsInDB = await fixtureUtils.getTags();
+          const tagsInDBNames = tagsInDB.map(tag => tag.name);
+          const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
+          console.log("Tags in DB after update:", tagsInDB);
+          console.log("Response tags IDs:",  res.body.tags);
+                
+          const normalizedTags = [];
+          normalizedTags.forEach( tag => {
+            expect(tagsInDBNames).to.include(tag);
+          });
+          tagsInDBIds.forEach( tagId => {
+            expect(res.body.tags).to.include(tagId);
+          });
+    
+    
+          expect(res.body.tags.length).to.equal(tagsInDB.length);
+          expect(res.status).to.equal(200);
+          expect(res.body.title).to.equal(newPostPayload.title);
+          expect(res.body.content).to.equal(newPostPayload.content);
+          expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
+          expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+        });
   });
 
   describe("PATCH /post/update/:postId failure", () => {

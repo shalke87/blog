@@ -2,6 +2,7 @@ import sinon from "sinon";
 import * as chai from "chai";
 import sinonChai from "sinon-chai";
 import userModel from "../../src/infrastructure/database/mongoose/models/userModel.js";
+import tagModel from "../../src/infrastructure/database/mongoose/models/tagModel.js";
 import postModel from "../../src/infrastructure/database/mongoose/models/postModel.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
@@ -35,6 +36,7 @@ class fixtureUtils {
     userToStore.email = userData.email || "test@example.com";
     userToStore.hashedPassword = cryptoUtils.hashPassword(userData.password || "Password01!", process.env.BCRYPT_SALT_ROUNDS);
     userToStore.createdAt = userData.createdAt || new Date();
+  
     return await userModel.create(userToStore);
   }
 
@@ -46,12 +48,24 @@ class fixtureUtils {
     return await postModel.find();
   }
 
+  async getTags(param = {}) {
+    return await tagModel.find();
+  }
+
   async createPost(postData) {
     const postToStore = {...postData};
     postToStore.title = postData.title || "testpost";
     postToStore.content = postData.content || "<p>Test content</p>";
-    postToStore.owner = postData.owner;
     postToStore.createdAt = postData.createdAt || new Date();
+    if(!postToStore.tags) {
+      postToStore.tags = [];
+    }
+    const tagResult = await tagModel.insertMany(
+      postToStore.tags.map(name => ({ name: name.trim().toLowerCase() }))
+    );
+    postToStore.tags = tagResult.map(tag => tag._id);
+    console.log("post to store in fixtureUtils.createPost:", postToStore);
+
     return await postModel.create(postToStore);
   }
 

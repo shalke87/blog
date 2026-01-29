@@ -6,6 +6,7 @@ import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import config from "../../../config/config.js";
+import e from "express";
 
 
 
@@ -34,12 +35,12 @@ describe("Functional add post test: POST /post/addPost ", () => {
   });
 
   describe("POST /post/addPost success", () => {
-    it("aggiunge un post e restituisce 200 - default draft", async () => { 
+    it("aggiunge un post con tag e restituisce 200 - default draft", async () => { 
       const userToStore = {
           username: "testuser",
           email: "test@example.com",
           password: "Password01!",
-          avatarURL: "/uploads/avatars/test_avatar.png"
+          avatarURL: "/uploads/avatars/test_avatar.png",
         };
       const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
       const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
@@ -47,18 +48,69 @@ describe("Functional add post test: POST /post/addPost ", () => {
       const newPostPayload = {
           title: "Titolo del post",
           content: "<p>Questo è un contenuto di test in rich text.</p>",
-          tags: [],        // oppure array di ObjectId se vuoi testare i tag
+          tags: ["tag1", "tag2"],        // oppure array di ObjectId se vuoi testare i tag
       };
 
-      console.log("Payload del nuovo post:", newPostPayload);
-
-      
       const res = await request(app) 
       .post("/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      const tagsInDB = await fixtureUtils.getTags();
+      const tagsInDBNames = tagsInDB.map(tag => tag.name);
+      const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
+      const normalizedTags = newPostPayload.tags.map(t => t.trim().toLowerCase()); 
+            
+      normalizedTags.forEach( tag => {
+        expect(tagsInDBNames).to.include(tag);
+      });
+      tagsInDBIds.forEach( tagId => {
+        expect(res.body.tags).to.include(tagId);
+      });
+
+      expect(res.body.tags.length).to.equal(newPostPayload.tags.length);
+      expect(res.body.tags.length).to.equal(tagsInDB.length);
+      expect(res.status).to.equal(201);
+      expect(res.body.title).to.equal(newPostPayload.title);
+      expect(res.body.content).to.equal(newPostPayload.content);
+      expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
+      expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+    });
+
+    it("test normalizzazione - elmina duplicati -> lowercase -> restituisce 200", async () => { 
+      const userToStore = {
+          username: "testuser",
+          email: "test@example.com",
+          password: "Password01!",
+          avatarURL: "/uploads/avatars/test_avatar.png",
+        };
+      const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+      const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+      
+      const newPostPayload = {
+          title: "Titolo del post",
+          content: "<p>Questo è un contenuto di test in rich text.</p>",
+          tags: ["TAG1", "TAG1"],        // oppure array di ObjectId se vuoi testare i tag
+      };
+
+      const res = await request(app) 
+      .post("/post/add") 
+      .set("Authorization", `Bearer ${token}`) 
+      .send(newPostPayload);
+
+      const tagsInDB = await fixtureUtils.getTags();
+      const tagsInDBNames = tagsInDB.map(tag => tag.name);
+      const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
+      const normalizedTags = newPostPayload.tags.map(t => t.trim().toLowerCase()); 
+            
+      normalizedTags.forEach( tag => {
+        expect(tagsInDBNames).to.include(tag);
+      });
+      tagsInDBIds.forEach( tagId => {
+        expect(res.body.tags).to.include(tagId);
+      });
+
+ 
       expect(res.status).to.equal(201);
       expect(res.body.title).to.equal(newPostPayload.title);
       expect(res.body.content).to.equal(newPostPayload.content);
@@ -83,9 +135,6 @@ describe("Functional add post test: POST /post/addPost ", () => {
           status: config.POST_STATUS.PUBLISHED
       };
 
-      console.log("Payload del nuovo post:", newPostPayload);
-
-      
       const res = await request(app) 
       .post("/post/add") 
       .set("Authorization", `Bearer ${token}`) 
@@ -97,6 +146,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       expect(res.body.content).to.equal(newPostPayload.content);
       expect(res.body.status).to.equal(newPostPayload.status);
       expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+
     });
   });
 
@@ -209,6 +259,60 @@ describe("Functional add post test: POST /post/addPost ", () => {
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"status" must be one of [draft, published]');
     });
+
+    it("aggiunge un post con un tag troppo corto", async () => { 
+      const userToStore = {
+          username: "testuser",
+          email: "test@example.com",
+          password: "Password01!",
+          avatarURL: "/uploads/avatars/test_avatar.png",
+        };
+      const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+      const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+      
+      const newPostPayload = {
+          title: "Titolo del post",
+          content: "<p>Questo è un contenuto di test in rich text.</p>",
+          tags: ["t", "tag2"],        // oppure array di ObjectId se vuoi testare i tag
+      };
+
+      const res = await request(app) 
+      .post("/post/add") 
+      .set("Authorization", `Bearer ${token}`) 
+      .send(newPostPayload);
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.equal('"tags[0]" length must be at least 2 characters long');
+
+    });
+
+    it("aggiunge un post con un tag che inizia con un numero", async () => { 
+      const userToStore = {
+          username: "testuser",
+          email: "test@example.com",
+          password: "Password01!",
+          avatarURL: "/uploads/avatars/test_avatar.png",
+        };
+      const userStored = await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+      const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+      
+      const newPostPayload = {
+          title: "Titolo del post",
+          content: "<p>Questo è un contenuto di test in rich text.</p>",
+          tags: ["1tag", "tag2"],        // oppure array di ObjectId se vuoi testare i tag
+      };
+
+      const res = await request(app) 
+      .post("/post/add") 
+      .set("Authorization", `Bearer ${token}`) 
+      .send(newPostPayload);
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.equal('"tags[0]" with value "1tag" fails to match the required pattern: /^[A-Za-z][A-Za-z0-9]*$/');
+
+    });
+
+    
   });
     
 });
