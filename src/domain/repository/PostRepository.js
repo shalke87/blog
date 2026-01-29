@@ -42,7 +42,7 @@ export default {
 
     async getPostById(postId) {
         try{
-            const post = await PostModel.findById(postId);
+            const post = await PostModel.findOne({ _id: postId });
             if (!post) {
                 return null;
             }

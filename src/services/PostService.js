@@ -1,7 +1,5 @@
-import { get } from 'mongoose';
 import NotFoundError from '../domain/errors/NotFoundError.js';
 import PostRepository from '../domain/repository/PostRepository.js';
-import TagRepository from '../domain/repository/TagRepository.js';
 import TagService from './TagService.js';
 
 export default {
@@ -28,9 +26,13 @@ export default {
                 throw new NotFoundError("Resource not found");
             }
             if (newTagsNames !== undefined){ //se sono stati passati nuovi tag o si vogliono cancellare tutti i tag
-                post.tags = await TagService.updateTags(existingPost.tags, newTagsNames); //returns an array of new non duplicate tagsIDs
+                post.tags = await TagService.updateTags(existingPost.tags, newTagsNames); //returns an array of new non duplicate tags ids
             }
-            const result = await PostRepository.updatePost(userId, postId, post);
+            const updatedPost = await PostRepository.updatePost(userId, postId, post); //ritorna il post aggiornato con i nuovi tag ids
+            const tagsObj = await TagService.getTagsByIds(updatedPost.tags);
+            const result = {...updatedPost, 
+                            tags: tagsObj.map(tag => tag.name) //sostituisco gli ids dei tag con i nomi
+                         };
             return result;
         } catch (error) {
             throw error;
@@ -48,5 +50,30 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async readPost(userId, postId) {
+        const post = await PostRepository.getPostById(postId);
+
+        if (!post) {
+            throw new NotFoundError("Resource not found");
+        }
+
+        console.log("Post retrieved in readPost:", post);
+        
+        if (post.status === "published") {
+            return post;
+        }
+
+        if (post.status === "draft") {
+            if (!userId || post.author.toString() !== userId) {
+                throw new NotFoundError("Resource not found");
+            }
+            return post;
+        }
+        // opzionale: gestione stati futuri
+        throw new NotFoundError("Resource not found");
     }
+
 }
+

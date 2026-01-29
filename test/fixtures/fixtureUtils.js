@@ -6,6 +6,7 @@ import tagModel from "../../src/infrastructure/database/mongoose/models/tagModel
 import postModel from "../../src/infrastructure/database/mongoose/models/postModel.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
+import config from "../../config/config.js";
 
 
 class fixtureUtils {
@@ -30,7 +31,7 @@ class fixtureUtils {
     };
   }
 
-  async createUser(userData) {
+  async createUser(userData = {}) {
     const userToStore = {...userData};
     userToStore.username = userData.username || "testuser";
     userToStore.email = userData.email || "test@example.com";
@@ -53,44 +54,58 @@ class fixtureUtils {
   }
 
   async createPost(postData) {
-    const postToStore = {...postData};
+    const postToStore = { ...postData };
+
     postToStore.title = postData.title || "testpost";
     postToStore.content = postData.content || "<p>Test content</p>";
     postToStore.createdAt = postData.createdAt || new Date();
-    if(!postToStore.tags) {
-      postToStore.tags = [];
-    }
-    const tagResult = await tagModel.insertMany(
-      postToStore.tags.map(name => ({ name: name.trim().toLowerCase() }))
+    postToStore.tags = postToStore.tags || [];
+
+    // Crea i tag e ottieni gli ID
+    const createdTags = await Promise.all(
+      postToStore.tags.map(tag => this.createTag(tag))
     );
-    postToStore.tags = tagResult.map(tag => tag._id);
+
+    // Sostituisci i nomi con gli ID
+    postToStore.tags = createdTags.map(t => t._id);
+
     console.log("post to store in fixtureUtils.createPost:", postToStore);
 
     return await postModel.create(postToStore);
   }
 
-  async createPostWithAuthorAndPayload(username = "testuser", email = "test@example.com") {
+
+  async createPostWithAuthorAndPayload(userData = {}, postData = {}) {
     const userToStore = {
-              username: username,
-              email: email,
+              username: userData.username || "testuser",
+              email: userData.email || "test@example.com",
               password: "Password01!",
               avatarURL: "/uploads/avatars/test_avatar.png"
             };
           const userStored = await this.createUser(userToStore);  //inserisce un utente nel DB in memoria
           const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
     
+          
           const existingPost = await this.createPost({
             title: "Titolo originale del post",
             content: "<p>Contenuto originale del post.</p>",
-            author: userStored._id
+            status: postData.status || config.POST_STATUS.DRAFT,
+            author: userStored._id,
+            tags: postData.tags || ["tag1", "tag2"]
           });
           
           const newPostPayload = {
-              title: "Titolo del post",
-              content: "<p>Questo è un contenuto di test in rich text.</p>",
-              tags: [],        // oppure array di ObjectId se vuoi testare i tag
+              title: postData.title || "Titolo del post",
+              content: postData.content || "<p>Questo è un contenuto di test in rich text.</p>",
           };
-          return { newPostPayload, existingPost, token};
+          return {newPostPayload, existingPost, token, userStored};
+  }
+
+  async createTag(tagName) {
+    const tagToStore = {
+      name: tagName.trim().toLowerCase()
+    };
+    return await tagModel.create(tagToStore);
   }
 }
 

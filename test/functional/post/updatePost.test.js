@@ -35,7 +35,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
 
   describe("PATCH /post/update/:postId success", () => {
     it("modifica un post e restituisce 200 - e nuovo contenuto", async () => { 
-      const {newPostPayload, existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
+      const {newPostPayload, existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({},{status: config.POST_STATUS.DRAFT});
       
 
       console.log("Payload del nuovo post:", newPostPayload);
@@ -85,15 +85,14 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           const tagsInDB = await fixtureUtils.getTags();
           const tagsInDBNames = tagsInDB.map(tag => tag.name);
           const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
-          console.log("Tags in DB after update:", tagsInDB);
-          console.log("Response tags IDs:",  res.body.tags);
+          console.log("res post", res.body);
           const normalizedPayloadTags = newPostPayload.tags.map(t => t.trim().toLowerCase()); 
                 
           normalizedPayloadTags.forEach( tag => {
             expect(tagsInDBNames).to.include(tag);
           });
-          res.body.tags.forEach( tagId => {
-            expect(tagsInDBIds).to.include(tagId);
+          res.body.tags.forEach( tagName => {
+            expect(tagsInDBNames).to.include(tagName);
           });
           
     
@@ -137,14 +136,14 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           const tagsInDBNames = tagsInDB.map(tag => tag.name);
           const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
           console.log("Tags in DB after update:", tagsInDB);
-          console.log("Response tags IDs:",  res.body.tags);
+          console.log("Response tags names:",  res.body.tags);
                 
           const normalizedTags = [];
           normalizedTags.forEach( tag => {
             expect(tagsInDBNames).to.include(tag);
           });
-          tagsInDBIds.forEach( tagId => {
-            expect(res.body.tags).to.include(tagId);
+          tagsInDBNames.forEach( tagName => {
+            expect(res.body.tags).to.include(tagName);
           });
     
     

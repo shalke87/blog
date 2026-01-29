@@ -32,5 +32,19 @@ export default {
         } catch (err) {
             next(err);
         }
+    },
+
+    async readPost(req, res, next) {
+        if(req.userId) {
+            console.log("User is authenticated with userId:", req.userId);
+            // Additional logic for authenticated users can be added here
+        }
+        try {
+            console.log("Entering readPost controller with userId:", req.userId);
+            const result = await PostService.readPost(req.userId, req.params.postId);
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
     }
 };
