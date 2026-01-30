@@ -11,6 +11,10 @@ export default {
     MAX_LIMIT: 100
   },
 
+  COMMENT: {
+    MAX_LENGTH: 300
+  },
+
   AVATAR: {
     PUBLIC_PATH: "/uploads/avatars/",
     FILE_SYSTEM_PATH:

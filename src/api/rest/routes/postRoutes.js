@@ -5,6 +5,7 @@ import authenticateJWT from "../../middlewares/authMiddlewareJWT.js";
 import idParamValidator from "../validators/postValidators/idParamValidator.js";
 import paginationQueryValidator from "../validators/postValidators/paginationQueryValidator.js";
 import optionalAuthMiddlewareJWT from "../../middlewares/optionalAuthMiddlewareJWT.js";
+import commentValidator from "../validators/postValidators/commentValidator.js";
 
 
 
@@ -16,6 +17,7 @@ router.delete("/delete/:postId", authenticateJWT, idParamValidator, PostControll
 router.get("/read/:postId", optionalAuthMiddlewareJWT, idParamValidator, PostController.readPost);
 router.get("/listPublished", optionalAuthMiddlewareJWT, paginationQueryValidator, PostController.listPublished);
 router.get("/listMine", authenticateJWT, paginationQueryValidator, PostController.listMine);
+router.post("/:postId/comment", authenticateJWT, idParamValidator, commentValidator, PostController.addComment);
 
 
 

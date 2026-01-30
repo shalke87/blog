@@ -91,6 +91,20 @@ export default {
         } catch (error) {
             next(error);
         }
+    },
+
+    async addComment(userId, postId, commentData) {
+        try {
+            commentData.author = userId;
+            commentData.createdAt = new Date();
+            const updatedPost = await PostRepository.addComment(postId, commentData);
+            if (!updatedPost) {
+                throw new NotFoundError("Resource not found");
+            }
+            return updatedPost;
+        } catch (error) {
+            throw error;
+        }
     }
 
 }

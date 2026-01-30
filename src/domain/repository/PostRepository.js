@@ -84,5 +84,33 @@ export default {
             console.error("Error listing posts by author:", error);
             throw error;
         }
+    },
+
+    async addComment(postId, commentData) {
+        try {
+            const updatedPost = await PostModel.findByIdAndUpdate(
+                postId,
+                {
+                    $push: {
+                        comments: {
+                            author: commentData.author,
+                            text: commentData.text,
+                            createdAt: commentData.createdAt
+                        }
+                    }
+                },
+                { new: true }
+            );
+            if (!updatedPost) {
+                return null;
+            }
+            console.log("Comment added to post:", updatedPost.toObject());
+            return updatedPost.toObject();
+        } catch (error) {
+            console.error("Error adding comment to post:", error);
+            throw error;
+        }
     }
+
+    
 }

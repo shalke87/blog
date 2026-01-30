@@ -75,5 +75,16 @@ export default {
         } catch (err) {
             next(err);
         }
+    },
+
+    async addComment(req, res, next) {
+        try {
+            console.log("Entering addComment controller with userId:", req.userId);
+            const result = await PostService.addComment(req.userId, req.params.postId, req.body); // req.body should contain comment data
+            result.message = "Comment added successfully.";
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
     }
 };

@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 import config from "../../../../../config/config.js";
+import CommentModel from "./commentModel.js";
+
+
 
 const PostSchema = new mongoose.Schema(
   {
@@ -45,12 +48,7 @@ const PostSchema = new mongoose.Schema(
       }
     ],
 
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment"
-      }
-    ]
+    comments: [CommentModel.schema]
   },
   {
     timestamps: true    // Aggiunge automaticamente i campi createdAt e updatedAt
