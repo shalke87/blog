@@ -35,8 +35,8 @@ describe("Functional read post test: GET /post/read/:postId ", () => {
 
   describe("GET /post/read/:postId success", () => {
     it("legge un post e restituisce 200 - e contenuto corretto - utente non loggato", async () => { 
-      const {existingPost} = await fixtureUtils.createPostWithAuthorAndPayload();
-      existingPost.status = config.POST_STATUS.PUBLISHED;
+      const {existingPost} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
+    
 
       const res = await request(app) 
       .get("/post/read/" + existingPost._id);

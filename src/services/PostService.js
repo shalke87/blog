@@ -60,7 +60,7 @@ export default {
         }
 
         console.log("Post retrieved in readPost:", post);
-        
+
         if (post.status === "published") {
             return post;
         }
@@ -73,6 +73,24 @@ export default {
         }
         // opzionale: gestione stati futuri
         throw new NotFoundError("Resource not found");
+    },
+
+    async listPublished(userId, page, limit) {
+        try{
+            const {posts, totalDocs} = await PostRepository.getAllPublishedPosts(page, limit);
+            return { data: posts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async listMine(userId, page, limit) {
+        try{
+            const {posts, totalDocs} = await PostRepository.getPostsByAuthor(userId, page, limit);
+            return { data: posts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
+        } catch (error) {
+            next(error);
+        }
     }
 
 }

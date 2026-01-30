@@ -69,8 +69,6 @@ class fixtureUtils {
     // Sostituisci i nomi con gli ID
     postToStore.tags = createdTags.map(t => t._id);
 
-    console.log("post to store in fixtureUtils.createPost:", postToStore);
-
     return await postModel.create(postToStore);
   }
 

@@ -46,5 +46,34 @@ export default {
         } catch (err) {
             next(err);
         }
+    },
+
+    async listPublished(req, res, next) {
+        const {page, limit} = req.query;
+        if(req.userId) {
+            console.log("User is authenticated with userId:", req.userId);
+            // Additional logic for authenticated users can be added here
+        }
+        try {
+            const result = await PostService.listPublished(req.userId, page, limit);
+            res.status(200).json({data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages});
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async listMine(req, res, next) {
+        const {page, limit} = req.query;
+        if(req.userId) {
+            console.log("User is authenticated with userId:", req.userId);
+            // Additional logic for authenticated users can be added here
+        }
+        try {
+            const result = await PostService.listMine(req.userId, page, limit);
+            res.status(200).json({data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages});
+
+        } catch (err) {
+            next(err);
+        }
     }
 };

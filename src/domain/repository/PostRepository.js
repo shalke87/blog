@@ -1,3 +1,4 @@
+import config from "../../../config/config.js";
 import PostModel from "../../infrastructure/database/mongoose/models/postModel.js";
 
 export default {
@@ -49,6 +50,38 @@ export default {
             return post.toObject();
         } catch (error) {
             console.error("Error retrieving post by ID:", error);
+            throw error;
+        }
+    },
+
+    async getAllPublishedPosts(page, limit) {
+        const skip = (page - 1) * limit;
+        try{
+            const posts = await PostModel.find({ status: config.POST_STATUS.PUBLISHED })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+            
+            const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
+            return { posts, totalDocs };
+        } catch (error) {
+            console.error("Error listing published posts:", error);
+            throw error;
+        }
+    },
+
+    async getPostsByAuthor(authorId, page, limit) {
+        const skip = (page - 1) * limit;
+        try{
+            const posts = await PostModel.find({ author: authorId })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+
+            const totalDocs = await PostModel.countDocuments({ author: authorId });
+            return { posts, totalDocs };
+        } catch (error) {
+            console.error("Error listing posts by author:", error);
             throw error;
         }
     }

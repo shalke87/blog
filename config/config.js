@@ -7,8 +7,8 @@ export default {
   },
 
   PAGINATION: {
-    defaultLimit: 20,
-    maxLimit: 100
+    DEFAULT_LIMIT: 10,
+    MAX_LIMIT: 100
   },
 
   AVATAR: {
