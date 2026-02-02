@@ -47,8 +47,13 @@ const PostSchema = new mongoose.Schema(
         ref: "User"
       }
     ],
+    likesCount: {
+      type: Number,
+      default: 0
+    },
 
     comments: [CommentModel.schema]
+
   },
   {
     timestamps: true    // Aggiunge automaticamente i campi createdAt e updatedAt

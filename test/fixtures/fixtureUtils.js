@@ -75,8 +75,8 @@ class fixtureUtils {
 
   async createPostWithAuthorAndPayload(userData = {}, postData = {}) {
     const userToStore = {
-              username: userData.username || "testuser",
-              email: userData.email || "test@example.com",
+              username: userData.username || "testuser999",
+              email: userData.email || "test999@example.com",
               password: "Password01!",
               avatarURL: "/uploads/avatars/test_avatar.png"
             };

@@ -84,7 +84,7 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
         console.log("Response body:", res.body);
         // Verifica risposta
         expect(res.status).to.equal(401);
-        expect(res.body.message).to.equal("Invalid or expired token");
+        expect(res.body.message).to.equal("Missing or invalid token");
         expect(res.body.userData).to.be.undefined;
     });
 

@@ -97,5 +97,27 @@ export default {
         } catch (err) {
             next(err);
         }
+    },
+
+    async deleteComment(req, res, next) {
+        try {
+            console.log("Entering deleteComment controller with userId:", req.userId);
+            const result = await PostService.deleteComment(req.userId, req.params.postId, req.params.commentId);
+            result.message = "Comment deleted successfully.";
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async toggleLike(req, res, next) {
+        try {
+            console.log("Entering toggleLike controller with userId:", req.userId);
+            const result = await PostService.toggleLike(req.userId, req.params.postId);
+            console.log("toggleLike result:", result);
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
     }
 };

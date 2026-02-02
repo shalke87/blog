@@ -118,6 +118,39 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async deleteComment(userId, postId, commentId) {
+        try {
+            const updatedPost = await PostRepository.deleteComment(postId, commentId, userId);
+            if (!updatedPost) {
+                throw new NotFoundError("Resource not found");
+            }
+            return updatedPost;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async toggleLike(userId, postId) {
+        try {
+            const post = await PostRepository.getPostById(postId);
+            if (!post || post.status !== "published") {
+                throw new NotFoundError("Resource not found");
+            }
+
+            const alreadyLiked = post.likes.some(id => id.toString() === userId);
+            if(alreadyLiked) {
+                await PostRepository.removeLike(postId, userId);
+                return {liked: false, likesCount: post.likesCount - 1};
+            } else {
+                // Aggiungi il like
+                await PostRepository.addLike(postId, userId);
+                return {liked: true, likesCount: post.likesCount + 1};
+            }
+        } catch (error) {
+            throw error;
+        }
     }
 
 }

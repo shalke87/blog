@@ -15,6 +15,6 @@ export default function authenticateJWT(req, res, next) {
         req.userId = decoded.userId; // contiene userId
         next();
     } catch (err) {
-        return res.status(401).json({ message: "Invalid or expired token" });
+        return res.status(401).json({ message: "Missing or invalid token" });
     }
 }

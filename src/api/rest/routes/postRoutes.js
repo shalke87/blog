@@ -20,6 +20,8 @@ router.get("/listPublished", optionalAuthMiddlewareJWT, paginationQueryValidator
 router.get("/listMine", authenticateJWT, paginationQueryValidator, PostController.listMine);
 router.post("/:postId/comment", authenticateJWT, idParamValidator, commentValidator, PostController.addComment);
 router.patch("/:postId/comment/:commentId", authenticateJWT, postAndCommentIdsValidator, commentValidator, PostController.updateComment);
+router.delete("/:postId/comment/:commentId", authenticateJWT, postAndCommentIdsValidator, PostController.deleteComment);
+router.patch("/:postId/like", authenticateJWT, idParamValidator, PostController.toggleLike);
 
 
 

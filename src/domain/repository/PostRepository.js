@@ -6,7 +6,6 @@ export default {
         console.log("Creating post with data:", data);
         try{
             const post = await PostModel.create(data);
-            console.log("Post created:", post);
             return post.toObject();
         } catch (error) {
             console.error("Error creating post:", error);
@@ -18,7 +17,6 @@ export default {
         console.log("Updating post with data:", data);
         try{
             const post = await PostModel.findByIdAndUpdate({ _id: postId, author: userId }, data, { new: true });
-            console.log("Post updated:", post);
             return post.toObject();
         } catch (error) {
             console.error("Error updating post:", error);
@@ -133,7 +131,46 @@ export default {
             console.error("Error updating comment in post:", error);
             throw error;
         }
+    },
+
+    async deleteComment(postId, commentId, userId) {
+        try {
+            const updatedPost = await PostModel.findOneAndUpdate(
+                { _id: postId, "comments._id": commentId, "comments.author": userId },
+                {
+                    $pull: {
+                        comments: { _id: commentId }
+                    }
+                },
+                { new: true }
+            );
+            if (!updatedPost) {
+                return null;
+            }
+            console.log("Comment deleted from post:", updatedPost.toObject());
+            return updatedPost.toObject();
+        } catch (error) {
+            console.error("Error deleting comment from post:", error);
+            throw error;
+        }
+    },
+
+    async addLike(postId, userId) {
+        const result = await PostModel.updateOne(
+            { _id: postId },
+            { $addToSet: { likes: userId }, $inc: { likesCount: 1 } }
+        );
+        return result;
+    },
+
+    async removeLike(postId, userId) {
+        const result = await PostModel.updateOne(
+            { _id: postId },
+            { $pull: { likes: userId }, $inc: { likesCount: -1 } }
+        );
+        return result;
     }
+
 
     
 }
