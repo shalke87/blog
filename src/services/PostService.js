@@ -105,6 +105,19 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async updateComment(userId, postId, commentId, commentData) {
+        try {
+            commentData.updatedAt = new Date();
+            const updatedPost = await PostRepository.updateComment(postId, commentId, userId, commentData);
+            if (!updatedPost) {
+                throw new NotFoundError("Resource not found");
+            }
+            return updatedPost;
+        } catch (error) {
+            throw error;
+        }
     }
 
 }

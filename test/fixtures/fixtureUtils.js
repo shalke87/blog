@@ -89,7 +89,11 @@ class fixtureUtils {
             content: "<p>Contenuto originale del post.</p>",
             status: postData.status || config.POST_STATUS.DRAFT,
             author: userStored._id,
-            tags: postData.tags || ["tag1", "tag2"]
+            tags: postData.tags || ["tag1", "tag2"],
+            comments: [{
+              author: userStored._id,
+              text: "Commento originale"
+            }]
           });
           
           const newPostPayload = {

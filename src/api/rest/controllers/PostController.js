@@ -86,5 +86,16 @@ export default {
         } catch (err) {
             next(err);
         }
+    },
+
+    async updateComment(req, res, next) {
+        try {
+            console.log("Entering updateComment controller with userId:", req.userId);
+            const result = await PostService.updateComment(req.userId, req.params.postId, req.params.commentId, req.body); // req.body should contain comment data
+            result.message = "Comment updated successfully.";
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
     }
 };

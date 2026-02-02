@@ -110,6 +110,29 @@ export default {
             console.error("Error adding comment to post:", error);
             throw error;
         }
+    },
+
+    async updateComment(postId, commentId, userId, commentData) {
+        try {
+            const updatedPost = await PostModel.findOneAndUpdate(
+                { _id: postId, "comments._id": commentId, "comments.author": userId },
+                {
+                    $set: {
+                        "comments.$.text": commentData.text,
+                        "comments.$.updatedAt": commentData.updatedAt
+                    }
+                },
+                { new: true }
+            );
+            if (!updatedPost) {
+                return null;
+            }
+            console.log("Comment updated in post:", updatedPost.toObject());
+            return updatedPost.toObject();
+        } catch (error) {
+            console.error("Error updating comment in post:", error);
+            throw error;
+        }
     }
 
     
