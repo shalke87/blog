@@ -52,10 +52,13 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       posts.push(post2);
       posts.push(post3);
       posts.push(existingPost);
-        const res = await request(app) 
-        .get("/post/listMine")
-        .set("Authorization", `Bearer ${token}`);
+
+      const res = await request(app) 
+      .get("/post/listMine")
+      .set("Authorization", `Bearer ${token}`);
       
+      console.log("Response body:", res.body);
+
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
         expect(post.author).to.equal(userStored._id.toString());

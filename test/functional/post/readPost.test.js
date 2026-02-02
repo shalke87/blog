@@ -10,7 +10,7 @@ import config from "../../../config/config.js";
 
 
 
-describe("Functional read post test: GET /post/read/:postId ", () => {
+describe("Functional read post test: GET /post/:postId ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,13 +33,13 @@ describe("Functional read post test: GET /post/read/:postId ", () => {
     await mongo.stop();
   });
 
-  describe("GET /post/read/:postId success", () => {
+  describe("GET /post/:postId success", () => {
     it("legge un post e restituisce 200 - e contenuto corretto - utente non loggato", async () => { 
       const {existingPost} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
     
 
       const res = await request(app) 
-      .get("/post/read/" + existingPost._id);
+      .get("/post/" + existingPost._id);
 
       console.log(res.body); 
       expect(res.status).to.equal(200);
@@ -50,12 +50,12 @@ describe("Functional read post test: GET /post/read/:postId ", () => {
 
   });
 
-  describe("GET /post/read/:postId failure", () => {
+  describe("GET /post/:postId failure", () => {
     it("prova a leggere una draft con utente non loggato", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.DRAFT});
       
       const res = await request(app) 
-      .get("/post/read/" + existingPost._id);
+      .get("/post/" + existingPost._id);
 
       console.log("posto letto:", res.body); 
       expect(res.status).to.equal(404); //perché il post è in draft
@@ -64,8 +64,7 @@ describe("Functional read post test: GET /post/read/:postId ", () => {
     it("lettura post inesistente", async () => { 
 
       const res = await request(app) 
-      .get("/post/read/" + new mongoose.Types.ObjectId().toString());
-
+      .get("/post/" + new mongoose.Types.ObjectId().toString());
       console.log("posto letto:", res.body); 
       expect(res.status).to.equal(404); //perché il post è in draft
     });
@@ -76,7 +75,7 @@ describe("Functional read post test: GET /post/read/:postId ", () => {
       const token2 = cryptoUtils.generateJWT({ userId: user2._id.toString() });
       
       const res = await request(app) 
-      .get("/post/read/" + existingPost._id)
+      .get("/post/" + existingPost._id)
       .set("Authorization", `Bearer ${token2}`);
 
       console.log("posto letto:", res.body); 

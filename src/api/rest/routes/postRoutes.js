@@ -15,13 +15,13 @@ const router = Router();
 router.post("/add", authenticateJWT, postValidator, PostController.addPost);
 router.patch("/update/:postId", authenticateJWT, idParamValidator, postValidator, PostController.updatePost);
 router.delete("/delete/:postId", authenticateJWT, idParamValidator, PostController.deletePost);
-router.get("/read/:postId", optionalAuthMiddlewareJWT, idParamValidator, PostController.readPost);
 router.get("/listPublished", optionalAuthMiddlewareJWT, paginationQueryValidator, PostController.listPublished);
 router.get("/listMine", authenticateJWT, paginationQueryValidator, PostController.listMine);
 router.post("/:postId/comment", authenticateJWT, idParamValidator, commentValidator, PostController.addComment);
 router.patch("/:postId/comment/:commentId", authenticateJWT, postAndCommentIdsValidator, commentValidator, PostController.updateComment);
 router.delete("/:postId/comment/:commentId", authenticateJWT, postAndCommentIdsValidator, PostController.deleteComment);
 router.patch("/:postId/like", authenticateJWT, idParamValidator, PostController.toggleLike);
+router.get("/:postId", optionalAuthMiddlewareJWT, idParamValidator, PostController.readPost);
 
 
 
