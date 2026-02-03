@@ -5,18 +5,13 @@ import { Server } from "socket.io";
 import app from "./app.js";
 import socketApi from "./api/socket/socketApi.js";
 import { connectDB } from "./infrastructure/database/mongoose/db.js";
+import createServer from "./createServer.js";
 
 // Connessione al database
 await connectDB();
 
-// Creazione del server HTTP e Socket.io
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: { origin: "*" }
-});
-
-socketApi(io); // inizializza il server e monta middleware e actions
-
+// Creazione del server HTTP (REST) e del server Socket.IO
+const { server, io } = createServer();
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
