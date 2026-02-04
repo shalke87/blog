@@ -1,15 +1,17 @@
 import { expect } from "chai";
 import { io as Client } from "socket.io-client";
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import { response } from "express";
+import config from "../../config/config.js";
+import ObjectId from "mongoose/lib/types/objectid.js";
 
-describe("Socket.IO + Actions (test minimale)", () => {
+describe("Socket.IO + toggleLike to a post action", () => {
   let server, clientSocket, mongo;
   const PORT = 4001;
+  let user, post;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
@@ -29,7 +31,8 @@ describe("Socket.IO + Actions (test minimale)", () => {
       await collection.deleteMany({});
     }
 
-    const user = await fixtureUtils.createUser();
+    user = await fixtureUtils.createUser();
+    post = await fixtureUtils.createPost({author: user._id, status: config.POST_STATUS.PUBLISHED, title: "testpost"});
     const token = cryptoUtils.generateJWT({ userId: user._id.toString() });
 
     clientSocket = Client(`http://localhost:${PORT}`, {
@@ -75,19 +78,27 @@ describe("Socket.IO + Actions (test minimale)", () => {
     await mongo.stop();
   });
 
-  it("should reach the post:create action", (done) => {
-    const payload = {
-      data: { title: "New Title", content: "This is an original post content." }
-    }
-    clientSocket.emit("post:create", payload, response => {
-      console.log("RESPONSE:", response);
-      expect(response).to.exist;
-      expect(response.success).to.be.true;
-      expect(response.result).to.exist;
-      expect(response.result.title).to.equal("New Title");
-      expect(response.result.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
-      done();
+
+  describe("Post Toggle Like Action", () => {
+    it("should reach the post:toggleLike action success", (done) => {
+      const payload = {
+        postId: post._id.toString()
+      }
+      clientSocket.emit("post:toggleLike", payload, response => {
+        console.log("RESPONSE:", response);
+        expect(response).to.exist;
+        expect(response.success).to.be.true;
+        expect(response.result).to.exist;
+        expect(response.result.data.title).to.equal("testpost");
+        expect(response.result.message).to.equal("Post toggled like successfully.");
+        expect(response.result.data.likes).to.include.members([user._id.toString()]);
+        done();
+      });
+      
     });
   });
+
+  
+
+  
 });

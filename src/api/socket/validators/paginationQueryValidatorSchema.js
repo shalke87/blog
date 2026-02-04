@@ -1,10 +1,9 @@
 import Joi from "joi";
-import validate from "../BaseValidator.js";
-import config from "../../../../../config/config.js";
+import config from "../../../../config/config.js";
 
-const schema = Joi.object({
+const paginationQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(config.PAGINATION.MAX_LIMIT).default(config.PAGINATION.DEFAULT_LIMIT)
-});
+}).default({ page: 1, limit: 10 }).allow(null);
 
-export default validate(schema, "query");
+export default paginationQuerySchema;

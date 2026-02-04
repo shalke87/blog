@@ -7,9 +7,10 @@ import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 import { response } from "express";
 
-describe("Socket.IO + Actions (test minimale)", () => {
+describe("Socket.IO + update post action", () => {
   let server, clientSocket, mongo;
   const PORT = 4001;
+  let user, post;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
@@ -29,7 +30,8 @@ describe("Socket.IO + Actions (test minimale)", () => {
       await collection.deleteMany({});
     }
 
-    const user = await fixtureUtils.createUser();
+    user = await fixtureUtils.createUser();
+    post = await fixtureUtils.createPost({author: user._id});
     const token = cryptoUtils.generateJWT({ userId: user._id.toString() });
 
     clientSocket = Client(`http://localhost:${PORT}`, {
@@ -75,19 +77,36 @@ describe("Socket.IO + Actions (test minimale)", () => {
     await mongo.stop();
   });
 
-  it("should reach the post:create action", (done) => {
-    const payload = {
-      data: { title: "New Title", content: "This is an original post content." }
-    }
-    clientSocket.emit("post:create", payload, response => {
-      console.log("RESPONSE:", response);
-      expect(response).to.exist;
-      expect(response.success).to.be.true;
-      expect(response.result).to.exist;
-      expect(response.result.title).to.equal("New Title");
-      expect(response.result.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
-      done();
+    describe("Post Update Action", () => {
+      it("should reach the post:update action", (done) => {
+        const payload = {
+          postId: post._id,
+          data: { title: "Updated Title", content: "This is a test post content modified." }
+        }
+        clientSocket.emit("post:update", payload, response => {
+          console.log("RESPONSE:", response);
+          expect(response.success).to.be.true;
+          expect(response.result).to.exist;
+          expect(response.result.title).to.equal("Updated Title");
+          expect(response.result.content).to.equal("This is a test post content modified.");
+          done();
+        });
+      });
+
+      it("should reach the post:update action and add 2 tags", (done) => {
+        const payload = {
+          postId: post._id,
+          data: { title: "Updated Title", content: "This is a test post content modified.", tags: ["tag1", "tag2"]}
+        }
+        clientSocket.emit("post:update", payload, response => {
+          console.log("RESPONSE:", response);
+          expect(response.success).to.be.true;
+          expect(response.result).to.exist;
+          expect(response.result.title).to.equal("Updated Title");
+          expect(response.result.content).to.equal("This is a test post content modified.");
+          expect(response.result.tags).to.include.members(["tag1", "tag2"]);
+          done();
+        });
+      });
     });
-  });
 });

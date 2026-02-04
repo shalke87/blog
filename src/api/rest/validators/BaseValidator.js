@@ -1,4 +1,3 @@
-
 export default function validate(schema, source = 'body') {
   return (req, res, next) => {
     const data = req[source];

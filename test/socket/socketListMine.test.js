@@ -1,15 +1,17 @@
 import { expect } from "chai";
 import { io as Client } from "socket.io-client";
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import { response } from "express";
+import config from "../../config/config.js";
+import ObjectId from "mongoose/lib/types/objectid.js";
 
-describe("Socket.IO + Actions (test minimale)", () => {
+describe("Socket.IO + listMine post action", () => {
   let server, clientSocket, mongo;
   const PORT = 4001;
+  let user, post, post2;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
@@ -29,7 +31,9 @@ describe("Socket.IO + Actions (test minimale)", () => {
       await collection.deleteMany({});
     }
 
-    const user = await fixtureUtils.createUser();
+    user = await fixtureUtils.createUser();
+    post = await fixtureUtils.createPost({author: user._id, status: config.POST_STATUS.PUBLISHED, title: "testpost", content: "The first post"});
+    post2 = await fixtureUtils.createPost({author: user._id, status: config.POST_STATUS.PUBLISHED, title: "testpost2", content: "The second post"});
     const token = cryptoUtils.generateJWT({ userId: user._id.toString() });
 
     clientSocket = Client(`http://localhost:${PORT}`, {
@@ -75,19 +79,25 @@ describe("Socket.IO + Actions (test minimale)", () => {
     await mongo.stop();
   });
 
-  it("should reach the post:create action", (done) => {
-    const payload = {
-      data: { title: "New Title", content: "This is an original post content." }
-    }
-    clientSocket.emit("post:create", payload, response => {
-      console.log("RESPONSE:", response);
-      expect(response).to.exist;
-      expect(response.success).to.be.true;
-      expect(response.result).to.exist;
-      expect(response.result.title).to.equal("New Title");
-      expect(response.result.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
-      done();
+
+  describe("Post List Mine Action", () => {
+    it("should reach the post:listMine action success", (done) => {
+      
+      clientSocket.emit("post:listMine", {}, (response) => {
+        try {
+          console.log("post:listMine response:", response);
+          expect(response).to.exist;
+          expect(response.result).to.exist;
+          expect(response.result.data).to.be.an("array");
+          expect(response.result.data[0].title).to.equal("testpost");
+          expect(response.result.data[1].title).to.equal("testpost2");
+          done();
+        } catch (err) {
+          done(err);
+        }
+      });
     });
   });
+
+  
 });

@@ -7,9 +7,10 @@ import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 import { response } from "express";
 
-describe("Socket.IO + Actions (test minimale)", () => {
+describe("Socket.IO + delete post action", () => {
   let server, clientSocket, mongo;
   const PORT = 4001;
+  let user, post;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
@@ -29,7 +30,8 @@ describe("Socket.IO + Actions (test minimale)", () => {
       await collection.deleteMany({});
     }
 
-    const user = await fixtureUtils.createUser();
+    user = await fixtureUtils.createUser();
+    post = await fixtureUtils.createPost({author: user._id});
     const token = cryptoUtils.generateJWT({ userId: user._id.toString() });
 
     clientSocket = Client(`http://localhost:${PORT}`, {
@@ -75,19 +77,19 @@ describe("Socket.IO + Actions (test minimale)", () => {
     await mongo.stop();
   });
 
-  it("should reach the post:create action", (done) => {
-    const payload = {
-      data: { title: "New Title", content: "This is an original post content." }
-    }
-    clientSocket.emit("post:create", payload, response => {
-      console.log("RESPONSE:", response);
-      expect(response).to.exist;
-      expect(response.success).to.be.true;
-      expect(response.result).to.exist;
-      expect(response.result.title).to.equal("New Title");
-      expect(response.result.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
-      done();
+
+    it("should reach the post:delete action", (done) => {
+      const payload = {
+        postId: post._id
+      }
+      clientSocket.emit("post:delete", payload, response => {
+        console.log("RESPONSE:", response);
+        expect(response.success).to.be.true;
+        expect(response.result).to.exist;
+        expect(response.result.title).to.equal("testpost");
+        done();
+      });
+
+      
     });
-  });
 });

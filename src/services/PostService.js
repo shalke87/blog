@@ -7,8 +7,10 @@ export default {
         data.author = userId; //associa l'autore del post all'utente loggato
         const {tags, ...post} = data;
         try{
-            const tagsIdResult = await TagService.normalizeAndSaveTags(tags);
-            post.tags = tagsIdResult;
+            if(tags){
+                const tagsIdResult = await TagService.normalizeAndSaveTags(tags);
+                post.tags = tagsIdResult;
+            }
             const result = await PostRepository.createPost(post);
             return result;
         } catch (error) {
@@ -138,15 +140,14 @@ export default {
             if (!post || post.status !== "published") {
                 throw new NotFoundError("Resource not found");
             }
-
             const alreadyLiked = post.likes.some(id => id.toString() === userId);
             if(alreadyLiked) {
-                await PostRepository.removeLike(postId, userId);
-                return {liked: false, likesCount: post.likesCount - 1};
+                const result = await PostRepository.removeLike(postId, userId);
+                return {liked: false, likesCount: result.likesCount, data: result};
             } else {
                 // Aggiungi il like
-                await PostRepository.addLike(postId, userId);
-                return {liked: true, likesCount: post.likesCount + 1};
+                const result = await PostRepository.addLike(postId, userId);
+                return {liked: true, likesCount: result.likesCount, data: result};
             }
         } catch (error) {
             throw error;

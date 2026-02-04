@@ -1,15 +1,16 @@
 import { expect } from "chai";
 import { io as Client } from "socket.io-client";
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import { response } from "express";
+import ObjectId from "mongoose/lib/types/objectid.js";
 
-describe("Socket.IO + Actions (test minimale)", () => {
+describe("Socket.IO + deleteComment post action", () => {
   let server, clientSocket, mongo;
   const PORT = 4001;
+  let user, post;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
@@ -29,7 +30,10 @@ describe("Socket.IO + Actions (test minimale)", () => {
       await collection.deleteMany({});
     }
 
-    const user = await fixtureUtils.createUser();
+    user = await fixtureUtils.createUser();
+    post = await fixtureUtils.createPost({author: user._id, status: "published", title: "testpost",
+        comments : [{ text: "This is a test comment", author: user._id }]
+    });
     const token = cryptoUtils.generateJWT({ userId: user._id.toString() });
 
     clientSocket = Client(`http://localhost:${PORT}`, {
@@ -75,19 +79,28 @@ describe("Socket.IO + Actions (test minimale)", () => {
     await mongo.stop();
   });
 
-  it("should reach the post:create action", (done) => {
-    const payload = {
-      data: { title: "New Title", content: "This is an original post content." }
-    }
-    clientSocket.emit("post:create", payload, response => {
-      console.log("RESPONSE:", response);
-      expect(response).to.exist;
-      expect(response.success).to.be.true;
-      expect(response.result).to.exist;
-      expect(response.result.title).to.equal("New Title");
-      expect(response.result.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
-      done();
+
+  describe("Post Delete Comment Action", () => {
+    it("should reach the post:deleteComment action success", (done) => {
+      const payload = {
+        postId: post._id.toString(),
+        commentId: post.comments[0]._id.toString(),
+      };
+      clientSocket.emit("post:deleteComment", payload, (response) => {
+        try {
+          console.log("post:deleteComment response:", response);
+          expect(response).to.exist;
+          expect(response.result).to.exist;
+          expect(response.result.title).to.equal("testpost");
+          expect(response.result.comments).to.be.an("array");
+          expect(response.result.comments).to.have.lengthOf(0);
+          done();
+        } catch (err) {
+          done(err);
+        }
+      });
     });
   });
+
+  
 });

@@ -59,7 +59,6 @@ export default {
                 .skip(skip)
                 .limit(limit)
                 .lean();
-            
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
             return { posts, totalDocs };
         } catch (error) {
@@ -156,17 +155,19 @@ export default {
     },
 
     async addLike(postId, userId) {
-        const result = await PostModel.updateOne(
+        const result = await PostModel.findByIdAndUpdate(
             { _id: postId },
-            { $addToSet: { likes: userId }, $inc: { likesCount: 1 } }
+            { $addToSet: { likes: userId }, $inc: { likesCount: 1 } },
+            { new: true }
         );
         return result;
     },
 
     async removeLike(postId, userId) {
-        const result = await PostModel.updateOne(
+        const result = await PostModel.findByIdAndUpdate(
             { _id: postId },
-            { $pull: { likes: userId }, $inc: { likesCount: -1 } }
+            { $pull: { likes: userId }, $inc: { likesCount: -1 } },
+            { new: true }
         );
         return result;
     }
