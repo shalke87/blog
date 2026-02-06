@@ -57,8 +57,6 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       .get("/post/listMine")
       .set("Authorization", `Bearer ${token}`);
       
-      console.log("Response body:", res.body);
-
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
         expect(post.author).to.equal(userStored._id.toString());

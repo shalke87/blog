@@ -41,7 +41,6 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       .patch("/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
-      console.log("Response body:", res.body);
       expect(res.body.liked).to.equal(true);
       expect(res.body.likesCount).to.equal(1);
     });
@@ -61,7 +60,6 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       .set("Authorization", `Bearer ${token}`) 
 
 
-      console.log("Response body:", res2.body);
       expect(res.body.liked).to.equal(true);
       expect(res.body.likesCount).to.equal(1);
       expect(res2.body.liked).to.equal(false);
@@ -79,7 +77,6 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       .patch("/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body).to.have.property("message");
     }); 
@@ -94,7 +91,6 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       .patch("/post/" + existingPost._id + "/like") 
    
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body).to.have.property("message");
     }); 
@@ -106,7 +102,6 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       .patch("/post/" + new ObjectId() + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("not found");

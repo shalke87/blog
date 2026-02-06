@@ -31,7 +31,7 @@ export default {
     async login(data) {
         console.log("Data received for login:", data); // da cancellare assolutamente
         const { email, password } = data;
-        const user = await UserRepository.findUserBy({ email });
+        const user = await UserRepository.findUserByEmail(email); 
         if (!user) {
             throw new UnauthorizedError('Email or password incorrect');
         }
@@ -45,6 +45,15 @@ export default {
         console.log("Generated JWT token:", tokenJWT);
         const {hashedPassword, ...userData} = user;
         return {userData, tokenJWT}; //return and object with user data without password and the token
+    },
+
+    async getUserById(userId) {
+        const user = await UserRepository.findUserById(userId);
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+        const {hashedPassword, ...userData} = user;
+        return userData; //return user data without password
     },
 
     async resetPasswordRequest(data) {

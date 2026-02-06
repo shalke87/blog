@@ -43,7 +43,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .set("Authorization", `Bearer ${token}`)        
       
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(200);
       expect(res.body.comments).to.be.an("array").that.has.lengthOf(0);
     });
@@ -59,7 +58,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"postId" must only contain hexadecimal characters. "postId" length must be 24 characters long. "commentId" must only contain hexadecimal characters. "commentId" length must be 24 characters long');
     });
@@ -73,7 +71,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });
@@ -87,7 +84,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .set("Authorization", `Bearer ${token}`)        
     
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });
@@ -101,7 +97,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       const res = await request(app) 
       .delete("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });
@@ -113,7 +108,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .delete("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
       .set("Authorization", `Bearer ${cryptoUtils.generateRandomToken(16)}`)
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });
@@ -126,7 +120,6 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       .delete("/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id)     
       .set("Authorization", `Bearer ${cryptoUtils.generateJWT({ userId: user2._id.toString() })}`)
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });

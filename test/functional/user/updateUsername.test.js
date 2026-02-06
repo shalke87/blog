@@ -52,7 +52,6 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
         .send({ username: newUsername });
 
 
-        console.log("Response body:", res.body);
         // Verifica risposta
         expect(res.status).to.equal(200);
         expect(res.body.email).to.equal(userToStore.email);
@@ -81,7 +80,6 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
         .send({ username: newUsername });
 
 
-        console.log("Response body:", res.body);
         // Verifica risposta
         expect(res.status).to.equal(401);
         expect(res.body.message).to.equal("Missing or invalid token");

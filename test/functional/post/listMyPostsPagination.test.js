@@ -56,8 +56,6 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const res = await request(app) 
       .get(`/post/listMine?page=${page}&limit=${limit}`);
 
-      console.log("Response body:", res.body);
-      
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });
@@ -104,7 +102,6 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
 
       const res = await request(app) 
       .get(`/post/listPublished?page=${page}&limit=${limit}`);
-      console.log("Response body:", res.body.message);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"page" must be a number. "limit" must be a number');
     });
@@ -117,7 +114,6 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const res = await request(app) 
       .get(`/post/listMine?page=${page}&limit=${limit}`);
       
-      console.log("Response body:", res.body.message);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });

@@ -1,8 +1,15 @@
 import NotFoundError from '../domain/errors/NotFoundError.js';
 import PostRepository from '../domain/repository/PostRepository.js';
 import TagService from './TagService.js';
+import NotificationService from './NotificationService.js';
 
-export default {
+class PostService {
+
+    constructor(io = null) {
+        this.io = io;
+        this.notificationService = new NotificationService(this.io);
+    }
+
     async addPost(userId, data) {
         data.author = userId; //associa l'autore del post all'utente loggato
         const {tags, ...post} = data;
@@ -16,7 +23,7 @@ export default {
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async updatePost(userId, postId, data) {
         const {tags: newTagsNames, ...post} = data;
@@ -34,12 +41,12 @@ export default {
             const tagsObj = await TagService.getTagsByIds(updatedPost.tags);
             const result = {...updatedPost, 
                             tags: tagsObj.map(tag => tag.name) //sostituisco gli ids dei tag con i nomi
-                         };
+            };
             return result;
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async deletePost(userId, postId) {
         console.log("PostService deletePost called with params:", postId);
@@ -52,7 +59,7 @@ export default {
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async readPost(userId, postId) {
         const post = await PostRepository.getPostById(postId);
@@ -75,7 +82,7 @@ export default {
         }
         // opzionale: gestione stati futuri
         throw new NotFoundError("Resource not found");
-    },
+    }
 
     async listPublished(userId, page, limit) {
         try{
@@ -84,7 +91,7 @@ export default {
         } catch (error) {
             next(error);
         }
-    },
+    }
 
     async listMine(userId, page, limit) {
         try{
@@ -93,7 +100,7 @@ export default {
         } catch (error) {
             next(error);
         }
-    },
+    }
 
     async addComment(userId, postId, commentData) {
         try {
@@ -103,24 +110,25 @@ export default {
             if (!updatedPost) {
                 throw new NotFoundError("Resource not found");
             }
+            await this.notificationService.createPostNotification(updatedPost.author, userId, updatedPost._id, 'comment'); // to, from, postId, type
             return updatedPost;
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async updateComment(userId, postId, commentId, commentData) {
         try {
             commentData.updatedAt = new Date();
             const updatedPost = await PostRepository.updateComment(postId, commentId, userId, commentData);
-            if (!updatedPost) {
+            if (!updatedPost || updatedPost.status !== "published") {
                 throw new NotFoundError("Resource not found");
             }
             return updatedPost;
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async deleteComment(userId, postId, commentId) {
         try {
@@ -132,7 +140,7 @@ export default {
         } catch (error) {
             throw error;
         }
-    },
+    }
 
     async toggleLike(userId, postId) {
         try {
@@ -147,6 +155,7 @@ export default {
             } else {
                 // Aggiungi il like
                 const result = await PostRepository.addLike(postId, userId);
+                await this.notificationService.createPostNotification(post.author, userId, post._id, 'like'); // to, from, postId, type
                 return {liked: true, likesCount: result.likesCount, data: result};
             }
         } catch (error) {
@@ -156,3 +165,4 @@ export default {
 
 }
 
+export default PostService;

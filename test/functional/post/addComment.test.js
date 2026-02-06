@@ -42,7 +42,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "Questo è un commento di test." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(200);
       expect(res.body.comments).to.be.an("array").that.has.lengthOf(2); //un commento è gia presente nel fixtureUtils
       expect(res.body.comments[1].text).to.equal("Questo è un commento di test.");    
@@ -58,7 +57,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "" });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("text");
@@ -72,7 +70,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({});
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("text");
@@ -86,7 +83,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({ extraField: "extraValue", text: "Questo è un commento di test." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("extraField");
@@ -100,7 +96,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({ extraField: "extraValue", text: "Questo è un commento di test." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("extraField");
@@ -116,7 +111,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .post("/post/" + existingPost._id + "/comment") 
       .send({ text: "Questo è un commento di test." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("token");
@@ -130,7 +124,6 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "Questo è un commento di test." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body).to.have.property("message");
       expect(res.body.message).to.include("not found");

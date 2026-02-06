@@ -1,0 +1,269 @@
+openapi: 3.0.3
+info:
+  title: Blog API
+  version: 1.0.0
+  description: Documentazione delle API del tuo blog
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /socket/post/create:
+    post:
+      summary: Evento Socket.IO: post:create
+      description: >
+        Questo non è un endpoint REST.  
+        È la documentazione dell’evento Socket.IO `post:create`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                status:
+                  type: string
+                  enum: [draft, published]
+      responses:
+        "200":
+          description: Risposta dell’evento Socket.IO
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    $ref: "#/components/schemas/Post"
+                  message:
+                    type: string
+
+  /socket/post/update:
+    patch:
+      summary: Evento Socket.IO: post:update
+      description: >
+        Questo non è un endpoint REST.  
+        È la documentazione dell’evento Socket.IO `post:update`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - _id
+              properties:
+                _id:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+                status:
+                  type: string
+                  enum: [draft, published]
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Risposta dell’evento Socket.IO
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    $ref: "#/components/schemas/Post"
+                  message:
+                    type: string
+
+  /socket/post/delete:
+    patch:
+      summary: Evento Socket.IO: post:delete
+      description: >
+        Questo non è un endpoint REST.  
+        È la documentazione dell’evento Socket.IO `post:delete`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - _id
+      responses:
+        "200":
+          description: Risposta dell’evento Socket.IO
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    $ref: "#/components/schemas/Post"
+                  message:
+                    type: string
+
+x-socket-events:
+  post:delete:
+    summary: Evento Socket.IO: post:delete
+    description: >
+      Questo evento Socket.IO elimina un post esistente.
+    payload:
+      type: object
+      required:
+        - _id
+      properties:
+        _id:
+          type: string
+          description: ID del post da eliminare
+    response:
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          $ref: "#/components/schemas/Post"
+        message:
+          type: string
+
+
+
+
+components:
+  schemas:
+
+    Post:
+      type: object
+      required:
+        - title
+        - content
+        - status
+        - author
+        - likesCount
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          description: ID univoco del post
+        title:
+          type: string
+          description: Titolo del post
+        content:
+          type: string
+          description: Contenuto HTML del post
+        status:
+          type: string
+          enum: [draft, published]
+          description: Stato del post
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        author:
+          type: string
+          description: ID dell'autore del post
+        tags:
+          type: array
+          items:
+            type: string
+        likes:
+          type: array
+          items:
+            type: string
+        likesCount:
+          type: integer
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Comment:
+      type: object
+      required:
+        - author
+        - text
+        - createdAt
+      properties:
+        _id:
+          type: string
+        author:
+          type: string
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Tag:
+      type: object
+      required:
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      required:
+        - username
+        - email
+        - hashedPassword
+        - createdAt
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        hashedPassword:
+          type: string
+        resetToken:
+          type: string
+          nullable: true
+        resetTokenExpiration:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        avatarURL:
+          type: string
+          nullable: true

@@ -56,8 +56,6 @@ describe("Functional list pagination test: GET /post/listPublished ", () => {
       const res = await request(app) 
       .get(`/post/listPublished?page=${page}&limit=${limit}`);
 
-      console.log("Response body:", res.body);
-      
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
         expect(post.author.toString()).to.equal(user._id.toString());
@@ -112,7 +110,6 @@ describe("Functional list pagination test: GET /post/listPublished ", () => {
 
       const res = await request(app) 
       .get(`/post/listPublished?page=${page}&limit=${limit}`);
-      console.log("Response body:", res.body.message);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"page" must be a number. "limit" must be a number');
     });

@@ -51,7 +51,6 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ oldPassword: userToStore.password, newPassword: newPassword });
 
-        console.log("Response body:", res.body);
         // Verifica risposta
         expect(res.status).to.equal(200);
         expect(res.body._id).to.equal(userStored._id.toString());
@@ -81,7 +80,6 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
         .send({ oldPassword: userToStore.password, newPassword: newPassword });
 
 
-        console.log("Response body:", res.body);
         // Verifica risposta
         expect(res.status).to.equal(401);
         expect(res.body.message).to.equal("Missing or invalid token");

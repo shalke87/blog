@@ -1,0 +1,45 @@
+import NotificationRepository from '../domain/repository/NotificationRepository.js';
+import UserService from './UserService.js';
+
+class NotificationService {
+    constructor(io) {
+        this.io = io;
+    }
+
+    async createPostNotification(to, from, postId, type) { 
+        try{
+            await NotificationRepository.createNotification(to, from, postId, type);
+            const fromUser = await UserService.getUserById(from); // 1. Recupero dati dell'utente mittente
+            if (!this.io) {
+                console.warn("Socket.io instance not available. Cannot emit notification.");
+                return;
+            }
+            this.io.to(to.toString()).emit("notification:new", { type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async sendPendingNotifications(userId, socket) {
+        try{
+            const notifications = await NotificationRepository.getNotificationsByUserIdAndReadStatus(userId, false); // Fetch unread notifications
+            if(notifications.length === 0) {
+                return 0; // No pending notifications, exit early
+            }
+            for (const notification of notifications) {
+                socket.emit("notification:new", { 
+                    type: notification.type, 
+                    postId: notification.postId, 
+                    fromUser: (await UserService.getUserById(notification.fromUserId.toString())).username // Nella notifica mando lo username dell'utente trigger
+                });
+            }
+            return notifications.length; // Return the number of notifications sent
+        } catch (error) {
+            console.error("Error sending pending notifications:", error);
+        }
+    }
+
+}
+
+export default NotificationService;
+

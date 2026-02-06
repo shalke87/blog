@@ -35,7 +35,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
 
   describe("PATCH /post/:postId/comment/:commentId success", () => {  
     it("modifica un commento e restituisce 200", async () => { 
-      const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
+      const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: "published"});
      
       
       const res = await request(app) 
@@ -43,7 +43,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(200);
       expect(res.body.comments).to.be.an("array").that.has.lengthOf(1);
       expect(res.body.comments[0].text).to.equal("Questa è una modifica del commento.");    
@@ -60,7 +59,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"postId" must only contain hexadecimal characters. "postId" length must be 24 characters long. "commentId" must only contain hexadecimal characters. "commentId" length must be 24 characters long');
     });
@@ -74,7 +72,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });
@@ -88,7 +85,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });
@@ -102,7 +98,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"value" is required');
     });
@@ -116,7 +111,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "" });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"text" is not allowed to be empty');
     });
@@ -130,7 +124,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "un commento corretto", extraField: "extraValue" });
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"extraField" is not allowed');
     });
@@ -145,7 +138,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
       .send({ text: "un commento corretto"});
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });
@@ -158,7 +150,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${cryptoUtils.generateRandomToken(16)}`)
       .send({ text: "un commento corretto"});
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
     });
@@ -172,7 +163,6 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .set("Authorization", `Bearer ${cryptoUtils.generateJWT({ userId: user2._id.toString() })}`)
       .send({ text: "un commento corretto"});
 
-      console.log("Response body:", res.body);
       expect(res.status).to.equal(404);
       expect(res.body.message).to.equal('Resource not found');
     });

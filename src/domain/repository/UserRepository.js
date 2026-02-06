@@ -24,6 +24,28 @@ export default {
         }
     },
 
+    async findUserByEmail(email) {
+        console.log("Finding user with email:", email);
+        try {
+            const user = await UserModel.findOne({ email });
+            return user ? user.toObject() : null;
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            throw error;
+        }
+    },
+
+    async findUserById(userId) {
+        console.log("Finding user with ID:", userId);
+        try {
+            const user = await UserModel.findById(userId);
+            return user ? user.toObject() : null;
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            throw error;
+        }
+    },
+
 
 
     async updateUserById(userId, updateData) {

@@ -44,7 +44,6 @@ describe("Functional countLikes test: get /post/:postId ", () => {
       .get("/post/" + existingPost._id) 
 
       const postsInDB = await fixtureUtils.getPosts();
-      console.log("response body:", res.body);
       expect(res.body.likesCount).to.equal(postsInDB[0].likesCount);      
 
     });
