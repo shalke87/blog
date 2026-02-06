@@ -28,6 +28,15 @@ export default {
             console.error("Error fetching notifications:", error);
             throw error;
         }
+    },
+
+    async markNotificationAsRead(notificationId) {
+        try {
+            return await NotificationModel.findByIdAndUpdate(notificationId, { read: true }, { new: true }).lean();
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+            throw error;
+        }
     }
     
 }

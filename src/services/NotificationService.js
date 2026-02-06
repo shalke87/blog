@@ -27,8 +27,10 @@ class NotificationService {
                 return 0; // No pending notifications, exit early
             }
             for (const notification of notifications) {
+                console.log("Sending pending notification:", notification);
                 socket.emit("notification:new", { 
                     type: notification.type, 
+                    id: notification._id.toString(), // Include notification ID for reference
                     postId: notification.postId, 
                     fromUser: (await UserService.getUserById(notification.fromUserId.toString())).username // Nella notifica mando lo username dell'utente trigger
                 });
@@ -36,6 +38,20 @@ class NotificationService {
             return notifications.length; // Return the number of notifications sent
         } catch (error) {
             console.error("Error sending pending notifications:", error);
+        }
+    }
+
+    async markNotificationAsRead(notificationId) {
+        try {
+            const result = await NotificationRepository.markNotificationAsRead(notificationId);
+            if (!result) {
+                throw new Error("Notification not found");
+            }
+            console.log(`Notification ${notificationId} marked as read.`, result);
+            return result;
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+            throw error;
         }
     }
 

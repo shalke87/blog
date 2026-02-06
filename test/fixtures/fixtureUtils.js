@@ -4,6 +4,7 @@ import sinonChai from "sinon-chai";
 import userModel from "../../src/infrastructure/database/mongoose/models/userModel.js";
 import tagModel from "../../src/infrastructure/database/mongoose/models/tagModel.js";
 import postModel from "../../src/infrastructure/database/mongoose/models/postModel.js";
+import notificationModel from "../../src/infrastructure/database/mongoose/models/notificationModel.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
 import config from "../../config/config.js";
@@ -108,6 +109,10 @@ class fixtureUtils {
       name: tagName.trim().toLowerCase()
     };
     return await tagModel.create(tagToStore);
+  }
+
+  async getNotifications(param = {}) {
+    return await notificationModel.find();
   }
 }
 

@@ -1,7 +1,7 @@
 import PostService from "../../../services/PostService.js";
 import createPostPayloadSchema from "../validators/createPostPayloadSchema.js";
 import updatePostPayloadSchema from "../validators/updatePostPayloadSchema.js";
-import idPayloadSchema from "../validators/idPayloadSchema.js";
+import postIdPayloadSchema from "../validators/postIdPayloadSchema.js";
 import paginationQuerySchema from "../validators/paginationQueryValidatorSchema.js";
 import addCommentPayloadSchema from "../validators/addCommentPayloadSchema.js";
 import updateCommentPayloadSchema from "../validators/updateCommentPayloadSchema.js";
@@ -62,7 +62,7 @@ class PostActions {
     
     async deletePost(payload, ack) {
         try {
-            const {error, value} = idPayloadSchema.validate(payload);
+            const {error, value} = postIdPayloadSchema.validate(payload);
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
@@ -77,7 +77,7 @@ class PostActions {
 
     async readPost(payload, ack) {
         try {
-            const {error, value} = idPayloadSchema.validate(payload);
+            const {error, value} = postIdPayloadSchema.validate(payload);
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
@@ -168,7 +168,7 @@ class PostActions {
 
     async toggleLike(payload, ack) {
         try {
-            const {error, value} = idPayloadSchema.validate(payload);
+            const {error, value} = postIdPayloadSchema.validate(payload);
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }

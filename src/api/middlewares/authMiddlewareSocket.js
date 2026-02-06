@@ -9,6 +9,7 @@ export default async function authMiddleware(socket, next) {
         socket.join(socket.userId.toString()); // Join a room with the user ID
         const notificationService = new NotificationService();
         await notificationService.sendPendingNotifications(socket.userId, socket); // Send pending notifications on connection
+        console.log("pending notifications sent to: ", socket.userId);
         next();
     } catch {
         next(new Error("Unauthorized"));
