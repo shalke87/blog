@@ -38,11 +38,8 @@ class PostService {
                 post.tags = await TagService.updateTags(existingPost.tags, newTagsNames); //returns an array of new non duplicate tags ids
             }
             const updatedPost = await PostRepository.updatePost(userId, postId, post); //ritorna il post aggiornato con i nuovi tag ids
-            const tagsObj = await TagService.getTagsByIds(updatedPost.tags);
-            const result = {...updatedPost, 
-                            tags: tagsObj.map(tag => tag.name) //sostituisco gli ids dei tag con i nomi
-            };
-            return result;
+            const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         } catch (error) {
             throw error;
         }
@@ -55,7 +52,8 @@ class PostService {
             if (!result) {
                 throw new NotFoundError("Resource not found");
             }
-            return result;
+            const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         } catch (error) {
             throw error;
         }
@@ -71,14 +69,16 @@ class PostService {
         console.log("Post retrieved in readPost:", post);
 
         if (post.status === "published") {
-            return post;
+            const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         }
 
         if (post.status === "draft") {
             if (!userId || post.author.toString() !== userId) {
                 throw new NotFoundError("Resource not found");
             }
-            return post;
+            const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         }
         // opzionale: gestione stati futuri
         throw new NotFoundError("Resource not found");
@@ -87,7 +87,8 @@ class PostService {
     async listPublished(userId, page, limit) {
         try{
             const {posts, totalDocs} = await PostRepository.getAllPublishedPosts(page, limit);
-            return { data: posts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
+            const populatedPosts = await Promise.all(posts.map(post => this.populateTagNames(post)));
+            return { data: populatedPosts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
         } catch (error) {
             next(error);
         }
@@ -96,7 +97,8 @@ class PostService {
     async listMine(userId, page, limit) {
         try{
             const {posts, totalDocs} = await PostRepository.getPostsByAuthor(userId, page, limit);
-            return { data: posts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
+            const populatedPosts = await Promise.all(posts.map(post => this.populateTagNames(post)));
+            return { data: populatedPosts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
         } catch (error) {
             next(error);
         }
@@ -111,7 +113,8 @@ class PostService {
                 throw new NotFoundError("Resource not found");
             }
             await this.notificationService.createPostNotification(updatedPost.author, userId, updatedPost._id, 'comment'); // to, from, postId, type
-            return updatedPost;
+            const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         } catch (error) {
             throw error;
         }
@@ -124,7 +127,8 @@ class PostService {
             if (!updatedPost || updatedPost.status !== "published") {
                 throw new NotFoundError("Resource not found");
             }
-            return updatedPost;
+            const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         } catch (error) {
             throw error;
         }
@@ -136,7 +140,8 @@ class PostService {
             if (!updatedPost) {
                 throw new NotFoundError("Resource not found");
             }
-            return updatedPost;
+            const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
+            return populatedPost;
         } catch (error) {
             throw error;
         }
@@ -161,6 +166,35 @@ class PostService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async fullTextSearch(query, page, limit) { 
+        try {
+            const {posts, totalDocs} = await PostRepository.fullTextSearch(query);
+            const tagIds = await TagService.fullTextSearch(query);
+            const postsByTags = await PostRepository.getPublishedPostsByTagIds(tagIds);
+            const allPosts = [...new Set([...posts, ...postsByTags])]; // Rimuove i duplicati
+            // Implementazione della paginazione manuale sui risultati combinati
+            const start = (page - 1) * limit;
+            const end = start + limit;
+            const paginated = allPosts.slice(start, end);
+            const populatedPosts = await Promise.all(paginated.map(post => this.populateTagNames(post)));
+            return { data: populatedPosts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async populateTagNames(post) {
+        try {
+            const tagsObj = await TagService.getTagsByIds(post.tags);
+            const postWithTagNames = {...post, 
+                                    tags: tagsObj.map(tag => tag.name) //sostituisco gli ids dei tag con i nomi
+            };
+            return postWithTagNames;
+        } catch (error) {
+            throw error;
+        }   
     }
 
 }

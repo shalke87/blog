@@ -32,7 +32,8 @@ export default {
 
     async markNotificationAsRead(notificationId) {
         try {
-            return await NotificationModel.findByIdAndUpdate(notificationId, { read: true }, { new: true }).lean();
+            const result = await NotificationModel.findByIdAndUpdate({ _id: notificationId }, { read: true }, { new: true }).lean();
+            return result;
         } catch (error) {
             console.error("Error marking notification as read:", error);
             throw error;

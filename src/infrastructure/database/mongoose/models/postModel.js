@@ -60,6 +60,7 @@ const PostSchema = new mongoose.Schema(
   }
 );
 
+PostSchema.index({ title: "text", content: "text", tags: "text" }); // title, content e tags sono indicizzati con il nome text
 const PostModel = mongoose.model("Post", PostSchema);
 
 export default PostModel;

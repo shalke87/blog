@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const PostSchema = new mongoose.Schema(
+const TagSchema = new mongoose.Schema(
     { 
       name: { 
         type: String, 
@@ -13,6 +13,7 @@ const PostSchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-const TagModel = mongoose.model("Tag", PostSchema);
+TagSchema.index({ name: "text" }); // Aggiungi un indice di testo sul campo 'name' per la ricerca full-text
+const TagModel = mongoose.model("Tag", TagSchema);
 
 export default TagModel;

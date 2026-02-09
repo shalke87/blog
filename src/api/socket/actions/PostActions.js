@@ -6,13 +6,14 @@ import paginationQuerySchema from "../validators/paginationQueryValidatorSchema.
 import addCommentPayloadSchema from "../validators/addCommentPayloadSchema.js";
 import updateCommentPayloadSchema from "../validators/updateCommentPayloadSchema.js";
 import postIdCommentIdPayloadSchema from "../validators/postIdCommentIdPayloadSchema.js";
+import fullTextSearchPayloadSchema from "../validators/fullTextSearchPayloadSchema.js";
 
 class PostActions {
     
     constructor(socket, io) {
         this.socket = socket;
         this.io = io;
-        this.PostService = new PostService(io); // Passa io a PostService per poter emettere notifiche
+        this.postService = new PostService(io); // Passa io a PostService per poter emettere notifiche
         this.registerEvents();
     }
 
@@ -27,6 +28,7 @@ class PostActions {
         this.socket.on("post:updateComment", this.updateComment.bind(this));
         this.socket.on("post:deleteComment", this.deleteComment.bind(this));
         this.socket.on("post:toggleLike", this.toggleLike.bind(this));
+        this.socket.on("post:fullTextSearch", this.fullTextSearch.bind(this));
     }
 
     async createPost(payload, ack) {
@@ -35,7 +37,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.addPost(this.socket.userId, value.data);
+            const result = await this.postService.addPost(this.socket.userId, value.data);
             result.message = "Post added successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -51,7 +53,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.updatePost(this.socket.userId, value.postId, value.data);
+            const result = await this.postService.updatePost(this.socket.userId, value.postId, value.data);
             result.message = "Post updated successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -66,7 +68,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.deletePost(this.socket.userId, value.postId);
+            const result = await this.postService.deletePost(this.socket.userId, value.postId);
             result.message = "Post deleted successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -81,7 +83,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.readPost(this.socket.userId, value.postId);
+            const result = await this.postService.readPost(this.socket.userId, value.postId);
             result.message = "Post read successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -97,7 +99,7 @@ class PostActions {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
 
-            const result = await this.PostService.listPublished(this.socket.userId, value.page, value.limit);
+            const result = await this.postService.listPublished(this.socket.userId, value.page, value.limit);
             ack({ success: true, 
                 result:{ data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages }
             });
@@ -112,7 +114,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.listMine(this.socket.userId, value.page, value.limit);
+            const result = await this.postService.listMine(this.socket.userId, value.page, value.limit);
             ack({ success: true, 
                 result:{ data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages}
             });
@@ -128,7 +130,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.addComment(this.socket.userId, value.postId, value.data);
+            const result = await this.postService.addComment(this.socket.userId, value.postId, value.data);
             ack({ success: true, result });
         } catch (err) {
             console.error("Error adding comment:", err);
@@ -142,7 +144,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.updateComment(this.socket.userId, value.postId, value.commentId, value.data);
+            const result = await this.postService.updateComment(this.socket.userId, value.postId, value.commentId, value.data);
             result.message = "Comment updated successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -157,7 +159,7 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.deleteComment(this.socket.userId, value.postId, value.commentId);
+            const result = await this.postService.deleteComment(this.socket.userId, value.postId, value.commentId);
             result.message = "Comment deleted successfully.";
             ack({ success: true, result });
         } catch (err) {
@@ -172,11 +174,26 @@ class PostActions {
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.PostService.toggleLike(this.socket.userId, value.postId);
+            const result = await this.postService.toggleLike(this.socket.userId, value.postId);
             result.message = "Post toggled like successfully.";
             ack({ success: true, result });
         } catch (err) {
             console.error("Error toggling like:", err);
+            ack({ success: false, error: err.message });
+        }
+    }
+
+    async fullTextSearch(payload, ack) {
+        try {
+            const {error, value} = fullTextSearchPayloadSchema.validate(payload);
+            if(error) {
+                throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
+            }
+            const result = await this.postService.fullTextSearch(value.query, value.page, value.limit);
+            ack({ success: true, 
+                result:{ data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages }
+            });
+        } catch (err) {
             ack({ success: false, error: err.message });
         }
     }

@@ -24,5 +24,17 @@ export default {
             console.error("Error retrieving tags by IDs:", error);
             throw error;
         }
+    },
+
+    async fullTextSearchByName(name) {
+        try {
+            const tags = await TagModel.find(
+                { $text: { $search: name } },  // $text è l'indice definito nel modello
+                { score: { $meta: "textScore" } })
+            return tags.map(tag => tag.toObject());
+        } catch (error) {
+            console.error("Error searching tags by name:", error);
+            throw error;
+        }
     }
 }

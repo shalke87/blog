@@ -20,5 +20,11 @@ export default {
 
     async getTagsByIds(tagIds) {
         return await TagRepository.getTagsByIds(tagIds);
+    },
+
+    async fullTextSearch(name) {
+        const normalizedTagName = name.trim().toLowerCase();
+        const tags = await TagRepository.fullTextSearchByName(normalizedTagName);
+        return tags.map(tag => tag._id);
     }
 }

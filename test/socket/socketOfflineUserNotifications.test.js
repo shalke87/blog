@@ -87,7 +87,7 @@ describe("Socket.IO notifications", () => {
   });
 
   describe("Post Comment Action", () => {
-    it.only("should send a notification to the post author when the post is commented", async () => {
+    it("should send a notification to the post author when the post is commented", async () => {
       const ownerToken = cryptoUtils.generateJWT({ userId: ownerUser._id.toString() });
       const payload = {
         postId: post._id,
@@ -107,6 +107,7 @@ describe("Socket.IO notifications", () => {
     
       
       const receivedNotifications = [];
+      let markAsReadResponsesCounter = 0;
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           console.log("Connection timeout - socket not connecting");
@@ -118,40 +119,39 @@ describe("Socket.IO notifications", () => {
           reconnection: false
         });
 
-        ownerSocket.on("notification:new", (notification) => {
-          receivedNotifications.push(notification);
-          console.log("Received notification:", notification);
-          ownerSocket.emit("notification:markAsRead", { notificationId: notification.id }, (response) => {
-            expect(response).to.exist;
-            expect(response.success).to.be.true;
-            console.log("Mark as read response:", response);
-          }); // risponde al server, comunica lettura della notifica
-
-          if (receivedNotifications.length === 2) {
-            clearTimeout(timeout);
-            resolve();
-          }
-        });
-
-        ownerSocket.on("connect", () => {
-          console.log("Socket connected successfully!");
-          clearTimeout(timeout);
-          resolve();
-        });
-      
         ownerSocket.on("connect_error", (err) => {
           console.log("CONNECT ERROR:", err.message);
           clearTimeout(timeout);
           reject(err);
         });
+
+        ownerSocket.on("notification:new", async (notification) => {
+          receivedNotifications.push(notification);
+          console.log("Received notification:", notification);
+          ownerSocket.emit("notification:markAsRead", { notificationId: notification.id }, async (response) => {
+            expect(response).to.exist;
+            expect(response.success).to.be.true;
+            console.log("Mark as read response:", response);
+            markAsReadResponsesCounter++;
+            console.log(`Mark as read responses counter: ${markAsReadResponsesCounter}`);
+            
+            if (receivedNotifications.length === 2 && markAsReadResponsesCounter === 2) { // aspetto di aver ricevuto tutte le notifiche e di aver risposto a tutte con markAsRead
+            const notifications = await fixtureUtils.getNotifications();
+            console.log("Notifications in DB:", notifications);
+            expect(notifications).to.have.lengthOf(2);
+            expect(notifications[0].read).to.be.true;
+            expect(notifications[1].read).to.be.true;
+            clearTimeout(timeout);
+            resolve();
+          }
+          }); 
+
+        });
+      
       });     
 
       expect(receivedNotifications).to.have.lengthOf(2);
-      const notifications = await fixtureUtils.getNotifications();
-      consolre.log("Notifications in DB:", notifications);
-      expect(notifications).to.have.lengthOf(2);
-      expect(notifications[0].read).to.be.true;
-      expect(notifications[1].read).to.be.true;
+      
 
       for (const notification of receivedNotifications) {
         expect(notification).to.have.property("type", "comment");
@@ -189,12 +189,6 @@ describe("Socket.IO notifications", () => {
             clearTimeout(timeout);
             resolve();
           }
-        });
-
-        ownerSocket.on("connect", () => {
-          console.log("Socket connected successfully!");
-          clearTimeout(timeout);
-          resolve();
         });
       
         ownerSocket.on("connect_error", (err) => {

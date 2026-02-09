@@ -112,7 +112,9 @@ class fixtureUtils {
   }
 
   async getNotifications(param = {}) {
-    return await notificationModel.find();
+    const result = await notificationModel.find();
+    console.log("FixtureUtils - Fetched notifications from DB:", result);
+    return result;
   }
 }
 

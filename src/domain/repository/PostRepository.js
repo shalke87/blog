@@ -67,6 +67,20 @@ export default {
         }
     },
 
+    async fullTextSearch(query) {
+        try{
+            const posts = await PostModel.find(
+                { status: config.POST_STATUS.PUBLISHED, $text: { $search: query } },  // $text è l'indice definito nel modello
+                { score: { $meta: "textScore" } })
+                .lean();
+            const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
+            return { posts, totalDocs };
+        } catch (error) {
+            console.error("Error listing published posts:", error);
+            throw error;
+        }
+    },
+
     async getPostsByAuthor(authorId, page, limit) {
         const skip = (page - 1) * limit;
         try{
@@ -170,8 +184,19 @@ export default {
             { new: true }
         );
         return result;
-    }
+    },
 
+    async getPublishedPostsByTagIds(tagIds) {
+        try {
+            const posts = await PostModel.find(
+                { status: config.POST_STATUS.PUBLISHED, tags: { $in: tagIds } }
+            ).lean();
+            return posts;
+         } catch (error) {
+             console.error("Error retrieving posts by tag IDs:", error);
+             throw error;
+         }
+     }
 
     
 }

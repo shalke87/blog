@@ -47,7 +47,6 @@ class NotificationService {
             if (!result) {
                 throw new Error("Notification not found");
             }
-            console.log(`Notification ${notificationId} marked as read.`, result);
             return result;
         } catch (error) {
             console.error("Error marking notification as read:", error);
