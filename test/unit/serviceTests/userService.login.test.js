@@ -9,9 +9,10 @@ import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
+import authConfig from "../../../config/authConfig.js";
 
 describe("UserService.login", () => {
-  process.env.BCRYPT_SALT_ROUNDS = "12";
+  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test
@@ -21,7 +22,7 @@ describe("UserService.login", () => {
     it("dovrebbe verificare se un utente esiste nel sistema, confrontare la password e restituire l'utente e il token JWT", async () => {
 
       const loginData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(loginData.password, process.env.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(loginData.password, authConfig.BCRYPT_SALT_ROUNDS) };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
@@ -37,7 +38,7 @@ describe("UserService.login", () => {
   describe("UserService.login failure", () => {
     it("dovrebbe fallire se la password è errata", async () => {
       const correctUserData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, process.env.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "test@example.com", password: "wrongPassword!" };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
@@ -52,7 +53,7 @@ describe("UserService.login", () => {
 
     it("dovrebbe fallire se l'utente non esiste", async () => {
       const correctUserData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, process.env.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "wrongEmail@example.com", password: "Password01!" };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);

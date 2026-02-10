@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import crypto, { hash, verify } from "crypto";
+import authConfig from "../../../config/authConfig.js";
 
 // da implementare tutte le funzioni crypto, hash, jwt ecc
 export default {
@@ -9,7 +10,7 @@ export default {
     },
 
     hashPassword(password) {
-        return bcrypt.hashSync(password, parseInt(process.env.BCRYPT_SALT_ROUNDS));
+        return bcrypt.hashSync(password, parseInt(authConfig.BCRYPT_SALT_ROUNDS));
     },
 
     hashData(data) {
@@ -30,7 +31,7 @@ export default {
     },
 
     generateJWT(payload) {
-        return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+        return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: authConfig.JWT_EXPIRES_IN });
     },
 
     verifyJWT(token) {

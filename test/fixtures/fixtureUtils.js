@@ -8,6 +8,7 @@ import notificationModel from "../../src/infrastructure/database/mongoose/models
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
 import config from "../../config/config.js";
+import authConfig from "../../config/authConfig.js";
 
 
 class fixtureUtils {
@@ -36,7 +37,7 @@ class fixtureUtils {
     const userToStore = {...userData};
     userToStore.username = userData.username || "testuser";
     userToStore.email = userData.email || "test@example.com";
-    userToStore.hashedPassword = cryptoUtils.hashPassword(userData.password || "Password01!", process.env.BCRYPT_SALT_ROUNDS);
+    userToStore.hashedPassword = cryptoUtils.hashPassword(userData.password || "Password01!", authConfig.BCRYPT_SALT_ROUNDS);
     userToStore.createdAt = userData.createdAt || new Date();
   
     return await userModel.create(userToStore);

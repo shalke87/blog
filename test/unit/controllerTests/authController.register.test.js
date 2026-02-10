@@ -9,9 +9,10 @@ import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
 import AuthController from "../../../src/api/rest/controllers/AuthController.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
+import authConfig from "../../../config/authConfig.js";
 
 describe("AuthController test", () => {
-  process.env.BCRYPT_SALT_ROUNDS = "12";
+  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test

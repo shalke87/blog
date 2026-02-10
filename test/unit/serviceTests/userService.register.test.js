@@ -7,9 +7,10 @@ const { expect } = chai;
 import UserService from "../../../src/services/UserService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
+import authConfig from "../../../config/authConfig.js";
 
 describe("UserService.register success", () => {
-  process.env.BCRYPT_SALT_ROUNDS = "12";
+  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test

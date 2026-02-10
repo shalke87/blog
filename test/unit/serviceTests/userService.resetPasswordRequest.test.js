@@ -8,9 +8,10 @@ import UserService from "../../../src/services/UserService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import config from "../../../config/config.js";
+import authConfig from "../../../config/authConfig.js";
 
 describe("UserService.resetPasswordRequest", () => {
-  process.env.BCRYPT_SALT_ROUNDS = "12";
+  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test
@@ -21,7 +22,7 @@ describe("UserService.resetPasswordRequest", () => {
 
       const userData = { email: "test@example.com", password: "Password01!" };
       const userinDB = { email: "test@example.com", 
-        hashedPassword: cryptoUtils.hashPassword(userData.password, process.env.BCRYPT_SALT_ROUNDS),
+        hashedPassword: cryptoUtils.hashPassword(userData.password, authConfig.BCRYPT_SALT_ROUNDS),
         resetToken: cryptoUtils.generateRandomToken(),
         resetTokenExpiration: Date.now() + config.PASSWORD_RESET_TTL
       };
