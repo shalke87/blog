@@ -4,7 +4,7 @@ import PostModel from "../../infrastructure/database/mongoose/models/postModel.j
 export default {
     async createPost(data) {
         console.log("Creating post with data:", data);
-        try{
+        try {
             const post = await PostModel.create(data);
             return post.toObject();
         } catch (error) {
@@ -15,8 +15,9 @@ export default {
 
     async updatePost(userId, postId, data) {
         console.log("Updating post with data:", data);
-        try{
-            const post = await PostModel.findByIdAndUpdate({ _id: postId, author: userId }, data, { new: true });
+        try {
+            const post = await PostModel.findByIdAndUpdate({ _id: postId, author: userId }, data, { new: true })
+                .populate("author", "username");
             return post.toObject();
         } catch (error) {
             console.error("Error updating post:", error);
@@ -26,7 +27,7 @@ export default {
 
     async deletePost(userId, postId) {
         console.log("Deleting post with params:", postId);
-        try{
+        try {
             const post = await PostModel.findOneAndDelete({ _id: postId, author: userId });
             console.log("Post deleted:", post);
             if (!post) {
@@ -40,7 +41,7 @@ export default {
     },
 
     async getPostById(postId) {
-        try{
+        try {
             const post = await PostModel.findOne({ _id: postId });
             if (!post) {
                 return null;
@@ -54,10 +55,12 @@ export default {
 
     async getAllPublishedPosts(page, limit) {
         const skip = (page - 1) * limit;
-        try{
+        try {
             const posts = await PostModel.find({ status: config.POST_STATUS.PUBLISHED })
                 .skip(skip)
                 .limit(limit)
+                .populate("author", "username")
+                .populate("comments.author", "username")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
             return { posts, totalDocs };
@@ -68,7 +71,7 @@ export default {
     },
 
     async fullTextSearch(query) {
-        try{
+        try {
             const posts = await PostModel.find(
                 { status: config.POST_STATUS.PUBLISHED, $text: { $search: query } },  // $text è l'indice definito nel modello
                 { score: { $meta: "textScore" } })
@@ -83,10 +86,11 @@ export default {
 
     async getPostsByAuthor(authorId, page, limit) {
         const skip = (page - 1) * limit;
-        try{
+        try {
             const posts = await PostModel.find({ author: authorId })
                 .skip(skip)
                 .limit(limit)
+                .populate("author", "username")
                 .lean();
 
             const totalDocs = await PostModel.countDocuments({ author: authorId });
@@ -111,7 +115,16 @@ export default {
                     }
                 },
                 { new: true }
-            );
+            )
+                .populate({
+                    path: "comments.author",
+                    select: "_id username"
+                })
+                .populate({
+                    path: "author",
+                    select: "_id username"
+                })
+
             if (!updatedPost) {
                 return null;
             }
@@ -134,7 +147,15 @@ export default {
                     }
                 },
                 { new: true }
-            );
+            ).populate({
+                path: "comments.author",
+                select: "_id username"
+            })
+                .populate({
+                    path: "author",
+                    select: "_id username"
+                })
+
             if (!updatedPost) {
                 return null;
             }
@@ -156,7 +177,7 @@ export default {
                     }
                 },
                 { new: true }
-            );
+            ).populate("author", "username");
             if (!updatedPost) {
                 return null;
             }
@@ -190,13 +211,14 @@ export default {
         try {
             const posts = await PostModel.find(
                 { status: config.POST_STATUS.PUBLISHED, tags: { $in: tagIds } }
-            ).lean();
+            )
+                .populate("author", "username").lean();
             return posts;
-         } catch (error) {
-             console.error("Error retrieving posts by tag IDs:", error);
-             throw error;
-         }
-     }
+        } catch (error) {
+            console.error("Error retrieving posts by tag IDs:", error);
+            throw error;
+        }
+    }
 
-    
+
 }

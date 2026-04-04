@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import authConfig from "../../../../../config/authConfig.js";
 
 const UserSchema = new mongoose.Schema(
     {
@@ -37,7 +38,19 @@ const UserSchema = new mongoose.Schema(
         avatarURL: {
             type: String,
             default: null
-        }
+        },
+
+        status: {
+            type: String,
+            enum: [authConfig.USER_STATUS.ACTIVE, authConfig.USER_STATUS.PENDING, authConfig.USER_STATUS.BANNED, authConfig.USER_STATUS.SUSPENDED],
+            default: authConfig.USER_STATUS.PENDING
+        },
+
+        emailVerificationToken: String,
+        emailVerificationTokenExpiration: Date
+    },
+    {
+        versionKey: false
 
     }
 );

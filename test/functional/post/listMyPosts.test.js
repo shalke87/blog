@@ -59,7 +59,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
-        expect(post.author).to.equal(userStored._id.toString());
+        expect(post.author._id.toString()).to.equal(userStored._id.toString());
         expect(post.title).to.be.oneOf(posts.map(p => p.title));
       });
       expect(res.body.data).to.have.lengthOf(3);

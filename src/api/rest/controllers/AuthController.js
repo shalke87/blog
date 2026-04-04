@@ -3,6 +3,7 @@ import UserService from "../../../services/UserService.js";
 export default {
     async register(req, res, next) {
         try {
+            console.log("Request Body:", req.body);
             const result = await UserService.register(req.body);
             res.status(201).json(result);
         } catch (err) {
@@ -61,6 +62,17 @@ export default {
             return res.status(200).json({ 
                 message: "Password updated successfully.", 
                 email: result.email });
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async verifyEmail(req, res, next) {
+        try {
+            const result = await UserService.verifyEmail(req.query.token);
+            return res.status(200).json({ 
+                message: "Email verified successfully.", 
+                user: result.userData });
         } catch (err) {
             next(err);
         }

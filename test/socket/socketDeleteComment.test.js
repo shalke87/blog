@@ -91,9 +91,9 @@ describe("Socket.IO + deleteComment post action", () => {
           console.log("post:deleteComment response:", response);
           expect(response).to.exist;
           expect(response.result).to.exist;
-          expect(response.result.title).to.equal("testpost");
-          expect(response.result.comments).to.be.an("array");
-          expect(response.result.comments).to.have.lengthOf(0);
+          expect(response.result.data.title).to.equal("testpost");
+          expect(response.result.data.comments).to.be.an("array");
+          expect(response.result.data.comments).to.have.lengthOf(0);
           done();
         } catch (err) {
           done(err);

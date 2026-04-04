@@ -13,13 +13,17 @@ class PostService {
     async addPost(userId, data) {
         data.author = userId; //associa l'autore del post all'utente loggato
         const {tags, ...post} = data;
+        if(post.status === "published"){
+            post.publishedAt = new Date();
+        }
+        post.createdAt = new Date();
         try{
             if(tags){
                 const tagsIdResult = await TagService.normalizeAndSaveTags(tags);
                 post.tags = tagsIdResult;
             }
             const result = await PostRepository.createPost(post);
-            return result;
+            return {data: result};
         } catch (error) {
             throw error;
         }
@@ -34,12 +38,16 @@ class PostService {
             if (!existingPost) {
                 throw new NotFoundError("Resource not found");
             }
+            if(existingPost.status === "draft" && post.status === "published"){
+                post.publishedAt = new Date();
+            }
+
             if (newTagsNames !== undefined){ //se sono stati passati nuovi tag o si vogliono cancellare tutti i tag
                 post.tags = await TagService.updateTags(existingPost.tags, newTagsNames); //returns an array of new non duplicate tags ids
             }
             const updatedPost = await PostRepository.updatePost(userId, postId, post); //ritorna il post aggiornato con i nuovi tag ids
             const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         } catch (error) {
             throw error;
         }
@@ -53,7 +61,7 @@ class PostService {
                 throw new NotFoundError("Resource not found");
             }
             const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         } catch (error) {
             throw error;
         }
@@ -70,7 +78,7 @@ class PostService {
 
         if (post.status === "published") {
             const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         }
 
         if (post.status === "draft") {
@@ -78,7 +86,7 @@ class PostService {
                 throw new NotFoundError("Resource not found");
             }
             const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         }
         // opzionale: gestione stati futuri
         throw new NotFoundError("Resource not found");
@@ -114,7 +122,7 @@ class PostService {
             }
             await this.notificationService.createPostNotification(updatedPost.author, userId, updatedPost._id, 'comment'); // to, from, postId, type
             const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         } catch (error) {
             throw error;
         }
@@ -128,7 +136,7 @@ class PostService {
                 throw new NotFoundError("Resource not found");
             }
             const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         } catch (error) {
             throw error;
         }
@@ -141,7 +149,7 @@ class PostService {
                 throw new NotFoundError("Resource not found");
             }
             const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
-            return populatedPost;
+            return {data: populatedPost};
         } catch (error) {
             throw error;
         }

@@ -3,10 +3,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import request from "supertest";
 import app from "../../../src/app.js";
 import { expect } from "chai";
-import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
-import { config } from "dotenv";
-import configFile from "../../../config/config.js";
+import configFile from "../../../config/authConfig.js";
+import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmailRateLimiter.js";
 
 
 describe("Functional login test con rate limiter: POST /auth/login ", () => {
@@ -68,6 +67,8 @@ describe("Functional login test con rate limiter: POST /auth/login ", () => {
         expect(res2.body).to.not.have.property("tokenJWT");  
     });
   });
+
+  
 
     
 });

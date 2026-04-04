@@ -43,8 +43,8 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       .send({ text: "Questo è un commento di test." });
 
       expect(res.status).to.equal(200);
-      expect(res.body.comments).to.be.an("array").that.has.lengthOf(2); //un commento è gia presente nel fixtureUtils
-      expect(res.body.comments[1].text).to.equal("Questo è un commento di test.");    
+      expect(res.body.data.comments).to.be.an("array").that.has.lengthOf(2); //un commento è gia presente nel fixtureUtils
+      expect(res.body.data.comments[1].text).to.equal("Questo è un commento di test.");    
     });
   });
 

@@ -58,7 +58,7 @@ describe("Functional list pagination test: GET /post/listPublished ", () => {
 
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
-        expect(post.author.toString()).to.equal(user._id.toString());
+        expect(post.author._id.toString()).to.equal(user._id.toString());
         expect(post.status).to.equal(config.POST_STATUS.PUBLISHED);
       });
       expect(res.body.data.length).to.equal(5); //verifico che abbia restituito 5 post

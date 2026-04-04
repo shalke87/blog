@@ -6,7 +6,6 @@ const { expect } = chai;
 
 import UserService from "../../../src/services/UserService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
-import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
 import authConfig from "../../../config/authConfig.js";
@@ -22,11 +21,12 @@ describe("UserService.login", () => {
     it("dovrebbe verificare se un utente esiste nel sistema, confrontare la password e restituire l'utente e il token JWT", async () => {
 
       const loginData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(loginData.password, authConfig.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", status: authConfig.USER_STATUS.ACTIVE, hashedPassword: cryptoUtils.hashPassword(loginData.password, authConfig.BCRYPT_SALT_ROUNDS) };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
       const result = await UserService.login(loginData);
+
 
       expect(result.userData.email).to.deep.equal(loginData.email);
       expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
@@ -38,7 +38,7 @@ describe("UserService.login", () => {
   describe("UserService.login failure", () => {
     it("dovrebbe fallire se la password è errata", async () => {
       const correctUserData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", status: authConfig.USER_STATUS.ACTIVE, hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "test@example.com", password: "wrongPassword!" };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
@@ -53,7 +53,7 @@ describe("UserService.login", () => {
 
     it("dovrebbe fallire se l'utente non esiste", async () => {
       const correctUserData = { email: "test@example.com", password: "Password01!" };
-      const userinDB = { email: "test@example.com", hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
+      const userinDB = { email: "test@example.com", status: authConfig.USER_STATUS.ACTIVE, hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
       const loginData = { email: "wrongEmail@example.com", password: "Password01!" };
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
@@ -65,7 +65,21 @@ describe("UserService.login", () => {
 
       expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
     });
-  });
 
+    it("dovrebbe fallire se lo status dell'utente non è active", async () => {
+      const correctUserData = { email: "test@example.com", password: "Password01!" };
+      const userinDB = { email: "test@example.com", status: authConfig.USER_STATUS.PENDING, hashedPassword: cryptoUtils.hashPassword(correctUserData.password, authConfig.BCRYPT_SALT_ROUNDS) };
+      const loginData = { email: "test@example.com", password: "Password01!" };
+
+      sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
+
+      const result = await UserService.login(loginData).catch((error) => {
+        expect(error).to.be.instanceOf(UnauthorizedError);
+        expect(error.message).to.equal("Email or password incorrect");
+      });
+
+      expect(UserRepository.findUserByEmail).to.have.been.calledOnce;
+    });
+  });
   
 });

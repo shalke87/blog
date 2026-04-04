@@ -44,8 +44,8 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       .send({ text: "Questa è una modifica del commento." });
 
       expect(res.status).to.equal(200);
-      expect(res.body.comments).to.be.an("array").that.has.lengthOf(1);
-      expect(res.body.comments[0].text).to.equal("Questa è una modifica del commento.");    
+      expect(res.body.data.comments).to.be.an("array").that.has.lengthOf(1);
+      expect(res.body.data.comments[0].text).to.equal("Questa è una modifica del commento.");    
     });
   });
 

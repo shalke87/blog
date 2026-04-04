@@ -94,10 +94,10 @@ describe("Socket.IO + addComment post action", () => {
           console.log("post:addComment response:", response);
           expect(response).to.exist;
           expect(response.result).to.exist;
-          expect(response.result.comments).to.be.an("array");
-          expect(response.result.title).to.equal("testpost");
-          expect(response.result.comments).to.be.an("array");
-          expect(response.result.comments[0].text).to.equal("This is a test comment");
+          expect(response.result.data.comments).to.be.an("array");
+          expect(response.result.data.title).to.equal("testpost");
+          expect(response.result.data.comments).to.be.an("array");
+          expect(response.result.data.comments[0].text).to.equal("This is a test comment");
           done();
         } catch (err) {
           done(err);

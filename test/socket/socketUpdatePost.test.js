@@ -87,8 +87,8 @@ describe("Socket.IO + update post action", () => {
           console.log("RESPONSE:", response);
           expect(response.success).to.be.true;
           expect(response.result).to.exist;
-          expect(response.result.title).to.equal("Updated Title");
-          expect(response.result.content).to.equal("This is a test post content modified.");
+          expect(response.result.data.title).to.equal("Updated Title");
+          expect(response.result.data.content).to.equal("This is a test post content modified.");
           done();
         });
       });
@@ -102,9 +102,9 @@ describe("Socket.IO + update post action", () => {
           console.log("RESPONSE:", response);
           expect(response.success).to.be.true;
           expect(response.result).to.exist;
-          expect(response.result.title).to.equal("Updated Title");
-          expect(response.result.content).to.equal("This is a test post content modified.");
-          expect(response.result.tags).to.include.members(["tag1", "tag2"]);
+          expect(response.result.data.title).to.equal("Updated Title");
+          expect(response.result.data.content).to.equal("This is a test post content modified.");
+          expect(response.result.data.tags).to.include.members(["tag1", "tag2"]);
           done();
         });
       });

@@ -43,9 +43,9 @@ describe("Functional read post test: GET /post/:postId ", () => {
 
       console.log(res.body); 
       expect(res.status).to.equal(200);
-      expect(res.body.title).to.equal(existingPost.title);
-      expect(res.body.content).to.equal(existingPost.content);
-      expect(res.body.status).to.equal(config.POST_STATUS.PUBLISHED);   
+      expect(res.body.data.title).to.equal(existingPost.title);
+      expect(res.body.data.content).to.equal(existingPost.content);
+      expect(res.body.data.status).to.equal(config.POST_STATUS.PUBLISHED);   
     });
 
   });

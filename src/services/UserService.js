@@ -7,17 +7,22 @@ import emailConfig from '../../config/emailConfig.js';
 import EmailFactory from '../infrastructure/email/EmailFactory.js';
 import BadRequestError from '../domain/errors/BadRequestError.js';
 import NotFoundError from '../domain/errors/NotFoundError.js';
+import authConfig from '../../config/authConfig.js';
 
 export default {
     async register(data) {
-        console.log("Data received for registration:", data);  // da cancellare assolutamente
         const { username, email, password } = data;
         const hashedPassword = cryptoUtils.hashPassword(password);
+        const verificationToken = cryptoUtils.generateRandomToken();
+        const hashedVerificationToken = cryptoUtils.hashData(verificationToken);
         try{
             const result = await UserRepository.createUser({
                 username,
                 email,
-                hashedPassword
+                hashedPassword,
+                emailVerificationToken: hashedVerificationToken,
+                emailVerificationTokenExpiration: new Date(Date.now() + authConfig.EMAIL_VERIFICATION_TOKEN_TTL),
+                status: authConfig.USER_STATUS.ACTIVE
             });
             return result;
         } catch (error) {
@@ -29,20 +34,17 @@ export default {
     },
 
     async login(data) {
-        console.log("Data received for login:", data); // da cancellare assolutamente
         const { email, password } = data;
         const user = await UserRepository.findUserByEmail(email); 
-        if (!user) {
+        if (!user || user.status !== authConfig.USER_STATUS.ACTIVE) {
             throw new UnauthorizedError('Email or password incorrect');
         }
-        console.log("User found:", user);
         const isPasswordValid = cryptoUtils.comparePassword(password, user.hashedPassword);
         if (!isPasswordValid) {
             throw new UnauthorizedError('Email or password incorrect');
         }
 
         const tokenJWT = cryptoUtils.generateJWT({ userId: user._id });
-        console.log("Generated JWT token:", tokenJWT);
         const {hashedPassword, ...userData} = user;
         return {userData, tokenJWT}; //return and object with user data without password and the token
     },
@@ -60,7 +62,7 @@ export default {
         const { email } = data;
         const resetToken = cryptoUtils.generateRandomToken();
         const hashedToken = cryptoUtils.hashData(resetToken);
-        const expiration = new Date(Date.now() + config.TOKEN_RESET_TTL);
+        const expiration = new Date(Date.now() + authConfig.PASSWORD_RESET_TOKEN_TTL);
         
         const updatedUser = await UserRepository.storeResetToken(email, hashedToken, expiration); //se l'utente esiste aggiorna il token
         if (updatedUser) {
@@ -106,12 +108,10 @@ export default {
     },
 
     async updatePassword(userId, data) {
-        console.log("Data received for updatePassword:", data);  // da cancellare assolutamente 
         const hashedOldPassword = cryptoUtils.hashPassword(data.oldPassword);
         const hashedNewPassword = cryptoUtils.hashPassword(data.newPassword);
         const user = await UserRepository.findUserBy({_id: userId});
         if(!user){
-            console.log("User not found with userId:", userId);
             throw new NotFoundError('User not found');
         }
         const validPassword = cryptoUtils.comparePassword(data.oldPassword, user.hashedPassword);
@@ -176,5 +176,35 @@ export default {
             subject: "Reset password",
             text: text
         });
+    },
+
+    async sendVerificationEmail(email, token) {
+        const emailService = EmailFactory.create(emailConfig.provider);
+        const text = `Clicca qui per verificare la tua email: ${process.env.SERVER_URL}/auth/verifyEmail?token=${token}`;
+        await emailService.send({
+            to: email,
+            subject: "Verify your email",
+            text: text
+        });
+    },
+
+    async verifyEmail(token) {
+        const hashedToken = cryptoUtils.hashData(token);
+        const user = await UserRepository.findUserBy({ emailVerificationToken: hashedToken });
+        if (!user) {
+            throw new BadRequestError('Invalid or expired verification token');
+        }
+        if (user.emailVerificationTokenExpiration < Date.now()) {
+            throw new BadRequestError('Invalid or expired verification token');
+        }
+        const result = await UserRepository.updateUserById(user._id, {
+            emailVerificationToken: null,
+            emailVerificationTokenExpiration: null,
+            status: authConfig.USER_STATUS.ACTIVE
+        });
+        const {hashedPassword, ...userData} = result; //return user data without password
+        return { userData };
     }
+
+
 }

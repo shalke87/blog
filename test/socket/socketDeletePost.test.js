@@ -86,7 +86,7 @@ describe("Socket.IO + delete post action", () => {
         console.log("RESPONSE:", response);
         expect(response.success).to.be.true;
         expect(response.result).to.exist;
-        expect(response.result.title).to.equal("testpost");
+        expect(response.result.data.title).to.equal("testpost");
         done();
       });
 

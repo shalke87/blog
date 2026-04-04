@@ -88,7 +88,7 @@ describe("Socket.IO + read post action", () => {
         expect(response).to.exist;
         expect(response.success).to.be.true;
         expect(response.result).to.exist;
-        expect(response.result.title).to.equal("testpost");
+        expect(response.result.data.title).to.equal("testpost");
         expect(response.result.message).to.equal("Post read successfully.");
         done();
       });

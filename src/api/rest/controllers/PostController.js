@@ -24,6 +24,7 @@ class PostController {
             const result = await this.postService.addPost(req.userId, req.body);
             result.message = "Post added successfully.";
             res.status(201).json(result);
+            console.log("addPost result:", result);
         } catch (err) {
             next(err);
         }
@@ -98,8 +99,7 @@ class PostController {
         try {
             console.log("Entering addComment controller with userId:", req.userId);
             const result = await this.postService.addComment(req.userId, req.params.postId, req.body); // req.body should contain comment data
-            result.message = "Comment added successfully.";
-            res.status(200).json(result);
+            res.status(200).json({data: result.data, message: "Comment added successfully."});
         } catch (err) {
             next(err);
         }
@@ -110,7 +110,7 @@ class PostController {
             console.log("Entering updateComment controller with userId:", req.userId);
             const result = await this.postService.updateComment(req.userId, req.params.postId, req.params.commentId, req.body); // req.body should contain comment data
             result.message = "Comment updated successfully.";
-            res.status(200).json(result);
+            res.status(200).json({data: result.data, message: result.message});
         } catch (err) {
             next(err);
         }
@@ -120,8 +120,7 @@ class PostController {
         try {
             console.log("Entering deleteComment controller with userId:", req.userId);
             const result = await this.postService.deleteComment(req.userId, req.params.postId, req.params.commentId);
-            result.message = "Comment deleted successfully.";
-            res.status(200).json(result);
+            res.status(200).json({data: result.data, message: "Comment deleted successfully."});
         } catch (err) {
             next(err);
         }

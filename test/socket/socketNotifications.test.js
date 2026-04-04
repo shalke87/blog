@@ -136,9 +136,9 @@ describe("Socket.IO notifications", () => {
           // 3️⃣ Verifica la risposta dell'azione
           expect(response.success).to.be.true;
           expect(response.result).to.exist;
-          expect(response.result.comments).to.be.an("array");
-          expect(response.result.comments).to.have.lengthOf(1);
-          expect(response.result.comments[0]).to.have.property("text", "Questo è un commento di prova.");
+          expect(response.result.data.comments).to.be.an("array");
+          expect(response.result.data.comments).to.have.lengthOf(1);
+          expect(response.result.data.comments[0]).to.have.property("text", "Questo è un commento di prova.");
           done();
         } catch (err) {
           done(err);

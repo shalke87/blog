@@ -36,7 +36,8 @@ describe("Functional login test: POST /auth/login ", () => {
 
         const userToStore = {
           email: "test@example.com",
-          password: "Password01!"
+          password: "Password01!",
+          status: "active" // per assicurarsi che l'utente sia attivo e possa effettuare il login
         };
 
         const loginData = {        // dati inviati al server
@@ -51,6 +52,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         // Verifica risposta
         expect(res.status).to.equal(200);
+        expect(res.body.user.status).to.equal("active");
         expect(res.body).to.have.property("tokenJWT");
         expect(res.body.user.email).to.equal(userToStore.email);
        
@@ -59,6 +61,31 @@ describe("Functional login test: POST /auth/login ", () => {
   });
 
   describe("POST /auth/login fail", () => {
+      it("invia al server email e password, riceve codice 401, status != active ", async () => {
+
+        const userToStore = {
+          email: "test@example.com",
+          password: "Password01!",
+          //status: "pending" // non scrivo pending, testo anche il default, utente non dovrebbe potersi loggare
+        };
+
+        const loginData = {        // dati inviati al server
+          email: userToStore.email,
+          password: userToStore.password
+        };
+
+        await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
+        const res = await request(app)
+        .post("/auth/login")
+        .send(loginData);
+
+        // Verifica risposta
+        expect(res.status).to.equal(401);
+        expect(res.body).to.not.have.property("tokenJWT");  
+        expect(res.body.message).to.equal("Email or password incorrect");
+      });
+    
+
       it("invia al server email e password, 400 email formalmente errata", async () => {
 
         const userToStore = {

@@ -65,16 +65,16 @@ describe("Functional add post test: POST /post/addPost ", () => {
         expect(tagsInDBNames).to.include(tag);
       });
       tagsInDBIds.forEach( tagId => {
-        expect(res.body.tags).to.include(tagId);
+        expect(res.body.data.tags).to.include(tagId);
       });
 
-      expect(res.body.tags.length).to.equal(newPostPayload.tags.length);
-      expect(res.body.tags.length).to.equal(tagsInDB.length);
+      expect(res.body.data.tags.length).to.equal(newPostPayload.tags.length);
+      expect(res.body.data.tags.length).to.equal(tagsInDB.length);
       expect(res.status).to.equal(201);
-      expect(res.body.title).to.equal(newPostPayload.title);
-      expect(res.body.content).to.equal(newPostPayload.content);
-      expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
-      expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+      expect(res.body.data.title).to.equal(newPostPayload.title);
+      expect(res.body.data.content).to.equal(newPostPayload.content);
+      expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
+      expect(res.body.data.author).to.equal(cryptoUtils.verifyJWT(token).userId);
     });
 
     it("test normalizzazione - elmina duplicati -> lowercase -> restituisce 200", async () => { 
@@ -107,15 +107,15 @@ describe("Functional add post test: POST /post/addPost ", () => {
         expect(tagsInDBNames).to.include(tag);
       });
       tagsInDBIds.forEach( tagId => {
-        expect(res.body.tags).to.include(tagId);
+        expect(res.body.data.tags).to.include(tagId);
       });
 
  
       expect(res.status).to.equal(201);
-      expect(res.body.title).to.equal(newPostPayload.title);
-      expect(res.body.content).to.equal(newPostPayload.content);
-      expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
-      expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+      expect(res.body.data.title).to.equal(newPostPayload.title);
+      expect(res.body.data.content).to.equal(newPostPayload.content);
+      expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
+      expect(res.body.data.author).to.equal(cryptoUtils.verifyJWT(token).userId);
     });
 
     it("aggiunge un post e restituisce 200 - status published", async () => { 
@@ -142,10 +142,10 @@ describe("Functional add post test: POST /post/addPost ", () => {
 
       console.log(res.body); 
       expect(res.status).to.equal(201);
-      expect(res.body.title).to.equal(newPostPayload.title);
-      expect(res.body.content).to.equal(newPostPayload.content);
-      expect(res.body.status).to.equal(newPostPayload.status);
-      expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+      expect(res.body.data.title).to.equal(newPostPayload.title);
+      expect(res.body.data.content).to.equal(newPostPayload.content);
+      expect(res.body.data.status).to.equal(newPostPayload.status);
+      expect(res.body.data.author).to.equal(cryptoUtils.verifyJWT(token).userId);
 
     });
   });

@@ -47,10 +47,10 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
 
       console.log(res.body); 
       expect(res.status).to.equal(200);
-      expect(res.body.title).to.equal(newPostPayload.title);
-      expect(res.body.content).to.equal(newPostPayload.content);
-      expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
-      expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+      expect(res.body.data.title).to.equal(newPostPayload.title);
+      expect(res.body.data.content).to.equal(newPostPayload.content);
+      expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
+      expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
     });
 
     it("modifica i tag di un post - aggiunge nuovi tag e restituisce 200", async () => { 
@@ -91,17 +91,17 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           normalizedPayloadTags.forEach( tag => {
             expect(tagsInDBNames).to.include(tag);
           });
-          res.body.tags.forEach( tagName => {
+          res.body.data.tags.forEach( tagName => {
             expect(tagsInDBNames).to.include(tagName);
           });
           
     
     
           expect(res.status).to.equal(200);
-          expect(res.body.title).to.equal(newPostPayload.title);
-          expect(res.body.content).to.equal(newPostPayload.content);
-          expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
-          expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+          expect(res.body.data.title).to.equal(newPostPayload.title);
+          expect(res.body.data.content).to.equal(newPostPayload.content);
+          expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
+          expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
         });
 
         it("modifica i tag di un post - passa oggetto con tags non valorizzati", async () => { 
@@ -143,16 +143,16 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
             expect(tagsInDBNames).to.include(tag);
           });
           tagsInDBNames.forEach( tagName => {
-            expect(res.body.tags).to.include(tagName);
+            expect(res.body.data.tags).to.include(tagName);
           });
     
     
-          expect(res.body.tags.length).to.equal(tagsInDB.length);
+          expect(res.body.data.tags.length).to.equal(tagsInDB.length);
           expect(res.status).to.equal(200);
-          expect(res.body.title).to.equal(newPostPayload.title);
-          expect(res.body.content).to.equal(newPostPayload.content);
-          expect(res.body.status).to.equal(config.POST_STATUS.DRAFT);
-          expect(res.body.author).to.equal(cryptoUtils.verifyJWT(token).userId);
+          expect(res.body.data.title).to.equal(newPostPayload.title);
+          expect(res.body.data.content).to.equal(newPostPayload.content);
+          expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
+          expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
         });
   });
 

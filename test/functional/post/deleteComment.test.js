@@ -44,7 +44,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       
 
       expect(res.status).to.equal(200);
-      expect(res.body.comments).to.be.an("array").that.has.lengthOf(0);
+      expect(res.body.data.comments).to.be.an("array").that.has.lengthOf(0);
     });
   });
 
