@@ -6,15 +6,15 @@ class NotificationService {
         this.io = io;
     }
 
-    async createPostNotification(to, from, postId, type) { 
+    async createPostNotification(to, from, postId, type) {  //genera notifiche per nuovi commenti o like su un post
         try{
-            await NotificationRepository.createNotification(to, from, postId, type);
+            const notification = await NotificationRepository.createNotification(to, from, postId, type);
             const fromUser = await UserService.getUserById(from); // 1. Recupero dati dell'utente mittente
             if (!this.io) {
                 console.warn("Socket.io instance not available. Cannot emit notification.");
                 return;
             }
-            this.io.to(to.toString()).emit("notification:new", { type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
+            this.io.to(to.toString()).emit("notification:new", { id: notification._id.toString(), type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
         } catch (error) {
             throw error;
         }

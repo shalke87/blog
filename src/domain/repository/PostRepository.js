@@ -177,7 +177,12 @@ export default {
                     }
                 },
                 { new: true }
-            ).populate("author", "username");
+            ).populate("author", "username")
+            .populate({
+                path: "comments.author",
+                select: "_id username"
+            });
+
             if (!updatedPost) {
                 return null;
             }

@@ -4,7 +4,12 @@ import errorHandler from "./api/middlewares/errorHandler.js";
 import cors from "cors";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" })); // Configura CORS per consentire richieste dal frontend in sviluppo
+app.use(cors(
+    {
+        origin: "http://localhost:5173", 
+        credentials: true
+    }
+)); // Configura CORS per consentire richieste dal frontend in sviluppo
 console.log("CORS configurato per http://localhost:5173");
 app.use(express.json());
 

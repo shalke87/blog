@@ -25,7 +25,7 @@ class NotificationActions {
             ack({ success: true, message: "Notification marked as read." });
         } catch (error) {
             console.error("Error marking notification as read:", error);
-            ack({ success: false, message: "Failed to mark notification as read." });
+            ack({ success: false, message: "Failed to mark notification as read.", error: error.message });
         }
     }
     
