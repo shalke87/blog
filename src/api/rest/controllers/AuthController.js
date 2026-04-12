@@ -1,10 +1,10 @@
-import UserService from "../../../services/UserService.js";
+import AuthService from "../../../services/AuthService.js";
 
 export default {
     async register(req, res, next) {
         try {
             console.log("Request Body:", req.body);
-            const result = await UserService.register(req.body);
+            const result = await AuthService.register(req.body);
             res.status(201).json(result);
         } catch (err) {
             next(err);
@@ -13,7 +13,7 @@ export default {
 
     async login(req, res, next) {
         try {
-            const result = await UserService.login(req.body);
+            const result = await AuthService.login(req.body);
             res.status(200).json({
                 user: result.userData,
                 tokenJWT: result.tokenJWT,
@@ -26,7 +26,7 @@ export default {
 
     async updateUsername(req, res, next) {
         try {
-            const result = await UserService.updateUsername(req.body);
+            const result = await AuthService.updateUsername(req.body);
             res.status(200).json({
                 user: result.userData,
                 message: "Username updated successfully."
@@ -38,7 +38,7 @@ export default {
 
     async resetPasswordRequest(req, res, next) {
         try {
-            const result = await UserService.resetPasswordRequest(req.body);
+            const result = await AuthService.resetPasswordRequest(req.body);
             res.status(200).json(result);
         } catch (err) {
             next(err);
@@ -47,7 +47,7 @@ export default {
 
     async resetPasswordConfirm(req, res, next) {
         try {
-            const result = await UserService.resetPasswordConfirm(req.query);
+            const result = await AuthService.resetPasswordConfirm(req.query);
             return res.json({ 
                 message: "Valid reset token", 
                 email: result.email });
@@ -58,7 +58,7 @@ export default {
 
     async resetUpdatePassword(req, res, next) {
         try {
-            const result = await UserService.resetUpdatePassword(req.body);
+            const result = await AuthService.resetUpdatePassword(req.body);
             return res.status(200).json({ 
                 message: "Password updated successfully.", 
                 email: result.email });
@@ -69,7 +69,7 @@ export default {
 
     async verifyEmail(req, res, next) {
         try {
-            const result = await UserService.verifyEmail(req.query.token);
+            const result = await AuthService.verifyEmail(req.query.token);
             return res.status(200).json({ 
                 message: "Email verified successfully.", 
                 user: result.userData });

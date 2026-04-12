@@ -1,5 +1,5 @@
 import NotificationRepository from '../domain/repository/NotificationRepository.js';
-import UserService from './UserService.js';
+import AuthService from './AuthService.js';
 
 class NotificationService {
     constructor(io) {
@@ -8,8 +8,12 @@ class NotificationService {
 
     async createPostNotification(to, from, postId, type) {  //genera notifiche per nuovi commenti o like su un post
         try{
+            if(to.toString() === from.toString()) {
+                console.log("Not sending notification to self for userId:", from);
+                return; // Non inviare notifiche a se stessi
+            }
             const notification = await NotificationRepository.createNotification(to, from, postId, type);
-            const fromUser = await UserService.getUserById(from); // 1. Recupero dati dell'utente mittente
+            const fromUser = await AuthService.getUserById(from); // 1. Recupero dati dell'utente mittente
             if (!this.io) {
                 console.warn("Socket.io instance not available. Cannot emit notification.");
                 return;
@@ -32,7 +36,7 @@ class NotificationService {
                     type: notification.type, 
                     id: notification._id.toString(), // Include notification ID for reference
                     postId: notification.postId, 
-                    fromUser: (await UserService.getUserById(notification.fromUserId.toString())).username // Nella notifica mando lo username dell'utente trigger
+                    fromUser: (await AuthService.getUserById(notification.fromUserId.toString())).username // Nella notifica mando lo username dell'utente trigger
                 });
             }
             return notifications.length; // Return the number of notifications sent

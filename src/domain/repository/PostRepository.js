@@ -199,7 +199,7 @@ export default {
             { _id: postId },
             { $addToSet: { likes: userId }, $inc: { likesCount: 1 } },
             { new: true }
-        );
+        ).populate("author", "username");
         return result;
     },
 
@@ -208,7 +208,7 @@ export default {
             { _id: postId },
             { $pull: { likes: userId }, $inc: { likesCount: -1 } },
             { new: true }
-        );
+        ).populate("author", "username");
         return result;
     },
 

@@ -4,7 +4,7 @@ import sinonChai from "sinon-chai";
 chai.use(sinonChai);
 const { expect } = chai;
 
-import UserService from "../../../src/services/UserService.js";
+import UserService from "../../../src/services/AuthService.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
 import AuthController from "../../../src/api/rest/controllers/AuthController.js";

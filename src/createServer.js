@@ -10,6 +10,7 @@ function createServer() {
             origin: "http://localhost:5173",
             credentials: true
         }, // Configura CORS per consentire richieste dal frontend in sviluppo
+        maxHttpBufferSize: 5e6 // 5 MB
     });
 
     //registra middleware e actions

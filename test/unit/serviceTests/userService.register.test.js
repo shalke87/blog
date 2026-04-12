@@ -4,12 +4,12 @@ import sinonChai from "sinon-chai";
 chai.use(sinonChai);
 const { expect } = chai;
 
-import UserService from "../../../src/services/UserService.js";
+import AuthService from "../../../src/services/AuthService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import authConfig from "../../../config/authConfig.js";
 
-describe("UserService.register success", () => {
+describe("AuthService.register success", () => {
   authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
@@ -21,7 +21,7 @@ describe("UserService.register success", () => {
 
       sinon.stub(UserRepository, "createUser").resolves(fakeUser);
 
-      const result = await UserService.register(fakeUser);
+      const result = await AuthService.register(fakeUser);
 
       expect(result).to.deep.equal(fakeUser);
       expect(UserRepository.createUser).to.have.been.calledOnce;
@@ -35,7 +35,7 @@ describe("UserService.register success", () => {
       sinon.stub(UserRepository, "createUser").rejects(duplicateError);
 
   
-      const res = await UserService.register(fakeUser).catch(error => { 
+      const res = await AuthService.register(fakeUser).catch(error => { 
         expect(error).to.be.instanceOf(ConflictError);
         expect(error.message).to.equal("Username or email already exists");
       });
@@ -48,7 +48,7 @@ describe("UserService.register success", () => {
 
       sinon.stub(UserRepository, "createUser").rejects(genericError);
 
-      const res = await UserService.register(fakeUser).catch(error => {
+      const res = await AuthService.register(fakeUser).catch(error => {
         expect(error).to.be.instanceOf(Error);
         expect(error.message).to.equal("DB offline");
       });

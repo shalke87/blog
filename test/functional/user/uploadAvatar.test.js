@@ -47,7 +47,8 @@ describe("Functional upload avatar test: POST /user/uploadAvatar ", () => {
 
   describe("POST /user/uploadAvatar success", () => {
     it("carica un avatar e restituisce 200", async () => { 
-      console.log("ENV:", process.env.NODE_ENV); console.log("PATH:", config.AVATAR.FILE_SYSTEM_PATH);
+      console.log("ENV:", process.env.NODE_ENV); 
+      console.log("PATH:", config.AVATAR.FILE_SYSTEM_PATH);
       const userToStore = {
           username: "testuser",
           email: "test@example.com",
