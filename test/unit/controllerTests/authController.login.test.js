@@ -4,7 +4,7 @@ import sinonChai from "sinon-chai";
 chai.use(sinonChai);
 const { expect } = chai;
 
-import UserService from "../../../src/services/UserService.js";
+import AuthService from "../../../src/services/AuthService.js";
 import ConflictError from "../../../src/domain/errors/ConflictError.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import { ObjectId } from "mongodb";
@@ -35,12 +35,12 @@ describe("AuthController test", () => {
         const res = fixtureUtils.mockResponse();
         const next = sinon.spy();
         const tokenJWT = cryptoUtils.generateJWT({ userId: new ObjectId("67b0c2f4a1d3c9e8f4a12bcd") });
-        sinon.stub(UserService, "login").resolves({userData: userFromService, tokenJWT: tokenJWT});
+        sinon.stub(AuthService, "login").resolves({userData: userFromService, tokenJWT: tokenJWT});
 
         await AuthController.login(req,res,next);
 
         expect(res.statusCode).to.equal(200);
-        expect(UserService.login).to.have.been.calledOnce;
+        expect(AuthService.login).to.have.been.calledOnce;
         expect(res.json).to.have.been.calledWith({
                 user: userFromService,
                 tokenJWT: tokenJWT,
@@ -58,11 +58,11 @@ describe("AuthController test", () => {
         const next = sinon.spy();
 
         const conflictError = new ConflictError("User already exists");
-        sinon.stub(UserService, "register").rejects(conflictError);
+        sinon.stub(AuthService, "register").rejects(conflictError);
 
         await AuthController.register(req,res,next);
 
-        expect(UserService.register).to.have.been.calledOnce;
+        expect(AuthService.register).to.have.been.calledOnce;
         expect(next).to.have.been.calledWith(conflictError);
       });
     });

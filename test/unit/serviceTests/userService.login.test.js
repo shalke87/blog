@@ -4,7 +4,7 @@ import sinonChai from "sinon-chai";
 chai.use(sinonChai);
 const { expect } = chai;
 
-import UserService from "../../../src/services/UserService.js";
+import AuthService from "../../../src/services/AuthService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
@@ -25,7 +25,7 @@ describe("UserService.login", () => {
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
-      const result = await UserService.login(loginData);
+      const result = await AuthService.login(loginData);
 
 
       expect(result.userData.email).to.deep.equal(loginData.email);
@@ -43,7 +43,7 @@ describe("UserService.login", () => {
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
-      const result = await UserService.login(loginData).catch((error) => {
+      const result = await AuthService.login(loginData).catch((error) => {
         expect(error).to.be.instanceOf(UnauthorizedError);
         expect(error.message).to.equal("Email or password incorrect");
       });
@@ -58,7 +58,7 @@ describe("UserService.login", () => {
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
-      const result = await UserService.login(loginData).catch((error) => {
+      const result = await AuthService.login(loginData).catch((error) => {
         expect(error).to.be.instanceOf(UnauthorizedError);
         expect(error.message).to.equal("Email or password incorrect");
       });
@@ -73,7 +73,7 @@ describe("UserService.login", () => {
 
       sinon.stub(UserRepository, "findUserByEmail").resolves(userinDB);
 
-      const result = await UserService.login(loginData).catch((error) => {
+      const result = await AuthService.login(loginData).catch((error) => {
         expect(error).to.be.instanceOf(UnauthorizedError);
         expect(error.message).to.equal("Email or password incorrect");
       });
