@@ -6,7 +6,7 @@ import YAML from "yamljs";
 const router = Router();
 const swaggerDocument = YAML.load("./docs/openapi.yaml");
 
-router.use("/", restApi);
+router.use("/api", restApi);
 
 router.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
