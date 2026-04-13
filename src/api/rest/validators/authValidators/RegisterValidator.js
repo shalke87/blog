@@ -6,7 +6,7 @@ const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string()    
         .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/)
-        .messages({ "string.pattern.base": "La password deve contenere almeno 8 caratteri, includere almeno una lettera maiuscola, una minuscola, un numero e un carattere speciale (es. !@#$%^&*)." })   
+        .messages({ "string.pattern.base": "The password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character (e.g. !@#$%^&*)." })   
         .required()
 
 });
