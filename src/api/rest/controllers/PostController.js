@@ -53,7 +53,7 @@ class PostController {
     }
 
     async readPost(req, res, next) {
-        if(req.userId) {
+        if (req.userId) {
             console.log("User is authenticated with userId:", req.userId);
             // Additional logic for authenticated users can be added here
         }
@@ -67,39 +67,39 @@ class PostController {
     }
 
     async listPublished(req, res, next) {
-        const {page, limit} = req.query;
-        if(req.userId) {
+        const { page, limit } = req.query;
+        if (req.userId) {
             console.log("User is authenticated with userId:", req.userId);
             // Additional logic for authenticated users can be added here
         }
         try {
             const result = await this.postService.listPublished(req.userId, page, limit);
-            res.status(200).json({data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages});
+            res.status(200).json({ data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages });
         } catch (err) {
             next(err);
         }
     }
 
     async listMine(req, res, next) {
-        const {page, limit} = req.query;
-        if(req.userId) {
+        const { page, limit } = req.query;
+        if (req.userId) {
             console.log("User is authenticated with userId:", req.userId);
             // Additional logic for authenticated users can be added here
         }
         try {
             const result = await this.postService.listMine(req.userId, page, limit);
-            res.status(200).json({data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages});
+            res.status(200).json({ data: result.data, page: result.page, limit: result.limit, total: result.total, totalPages: result.totalPages });
 
         } catch (err) {
             next(err);
         }
     }
-
+    
     async addComment(req, res, next) {
         try {
             console.log("Entering addComment controller with userId:", req.userId);
             const result = await this.postService.addComment(req.userId, req.params.postId, req.body); // req.body should contain comment data
-            res.status(200).json({data: result.data, message: "Comment added successfully."});
+            res.status(200).json({ data: result.data, message: "Comment added successfully." });
         } catch (err) {
             next(err);
         }
@@ -110,7 +110,7 @@ class PostController {
             console.log("Entering updateComment controller with userId:", req.userId);
             const result = await this.postService.updateComment(req.userId, req.params.postId, req.params.commentId, req.body); // req.body should contain comment data
             result.message = "Comment updated successfully.";
-            res.status(200).json({data: result.data, message: result.message});
+            res.status(200).json({ data: result.data, message: result.message });
         } catch (err) {
             next(err);
         }
@@ -120,7 +120,7 @@ class PostController {
         try {
             console.log("Entering deleteComment controller with userId:", req.userId);
             const result = await this.postService.deleteComment(req.userId, req.params.postId, req.params.commentId);
-            res.status(200).json({data: result.data, message: "Comment deleted successfully."});
+            res.status(200).json({ data: result.data, message: "Comment deleted successfully." });
         } catch (err) {
             next(err);
         }

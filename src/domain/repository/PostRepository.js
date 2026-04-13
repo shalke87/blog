@@ -75,6 +75,8 @@ export default {
             const posts = await PostModel.find(
                 { status: config.POST_STATUS.PUBLISHED, $text: { $search: query } },  // $text è l'indice definito nel modello
                 { score: { $meta: "textScore" } })
+                .populate("author", "username")
+                .populate("comments.author", "username")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
             return { posts, totalDocs };
