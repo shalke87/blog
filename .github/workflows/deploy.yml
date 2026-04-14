@@ -24,6 +24,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4   # <-- aggiunge questo
+
       - name: Copy .env to server and create uploads directory
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > key.pem
@@ -37,12 +40,14 @@ jobs:
             echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           EOF
+
       - name: Copy docker-compose.prod.yml to server
         run: |
           echo "${{ secrets.SERVER_SSH_KEY }}" > key.pem
           chmod 600 key.pem
           scp -o StrictHostKeyChecking=no -i key.pem docker-compose.prod.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/home/${{ secrets.SERVER_USER }}/projects/blog-BE/docker-compose.prod.yml
+            
       - name: Restart container on server
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
