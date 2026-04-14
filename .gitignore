@@ -36,3 +36,6 @@ coverage/
 
 # Bruno-APIs
 bruno-blog-api/
+
+# uploads folder
+uploads/

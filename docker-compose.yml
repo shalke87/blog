@@ -10,8 +10,7 @@ services:
     depends_on:
       - mongo
     volumes:
-      - .:/app
-      - /app/node_modules
+      - /var/www/myblog/uploads:/app/uploads
 
   mongo:
     image: mongo:7
