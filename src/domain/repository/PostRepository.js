@@ -63,6 +63,7 @@ export default {
                 .populate("comments.author", "username")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
+                console.log("Posts retrieved in getAllPublishedPosts:", posts);
             return { posts, totalDocs };
         } catch (error) {
             console.error("Error listing published posts:", error);
