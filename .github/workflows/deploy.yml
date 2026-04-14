@@ -30,8 +30,8 @@ jobs:
           chmod 600 key.pem
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             # 1. Prepara la directory degli upload
-            sudo mkdir -p /var/www/myblog/uploads
-            sudo chown -R ubuntu:ubuntu /var/www/myblog/uploads
+            sudo mkdir -p /var/www/blog/uploads
+            sudo chown -R ubuntu:ubuntu /var/www/blog/uploads
             cd ~/projects/blog-BE
             echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
