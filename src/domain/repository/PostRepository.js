@@ -59,7 +59,7 @@ export default {
             const posts = await PostModel.find({ status: config.POST_STATUS.PUBLISHED })
                 .skip(skip)
                 .limit(limit)
-                .populate("author", "username")
+                .populate("author", "username avatarURL")
                 .populate("comments.author", "username")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
