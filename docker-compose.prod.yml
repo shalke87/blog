@@ -1,0 +1,11 @@
+services:
+  backend:
+    image: ghcr.io/shalke87/blog:latest
+    env_file:
+      - .env
+    container_name: blog-be
+    ports:
+      - "3000:3000"
+    volumes:
+      - /var/www/blog/uploads:/app/uploads
+    restart: always
