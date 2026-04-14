@@ -96,6 +96,7 @@ class PostService {
         try{
             const {posts, totalDocs} = await PostRepository.getAllPublishedPosts(page, limit);
             const populatedPosts = await Promise.all(posts.map(post => this.populateTagNames(post)));
+            console.log("Posts retrieved in listPublished:", populatedPosts);
             return { data: populatedPosts, page, limit, total: totalDocs, totalPages: Math.ceil(totalDocs / limit) };
         } catch (error) {
             next(error);
