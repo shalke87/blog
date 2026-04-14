@@ -12,6 +12,9 @@ export default {
         const oldTagsObjs = await TagRepository.getTagsByIds(oldTagsIds);
         const oldTagNames = oldTagsObjs.map(tag => tag.name);
         const tagsToAddInDB = tagSet.filter(tagName => !oldTagNames.includes(tagName));
+        console.log("Old tag names:", oldTagNames);        
+        console.log("New tag names:", tagSet);
+        console.log("Tags to add in DB:", tagsToAddInDB);
         const addedTags = tagsToAddInDB.length > 0 ? await TagRepository.createManyTags(tagsToAddInDB) : [];
         const allTags = [...oldTagsObjs, ...addedTags];
         const filteredTags = allTags.filter(tag => tagSet.includes(tag.name));
