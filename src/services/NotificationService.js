@@ -19,6 +19,7 @@ class NotificationService {
                 return;
             }
             this.io.to(to.toString()).emit("notification:new", { id: notification._id.toString(), type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
+            console.log("Notification emitted to user:", to, "with data:", { id: notification._id.toString(), type, postId, fromUser: fromUser });
         } catch (error) {
             throw error;
         }

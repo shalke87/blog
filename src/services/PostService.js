@@ -121,7 +121,7 @@ class PostService {
             if (!updatedPost) {
                 throw new NotFoundError("Resource not found");
             }
-            await this.notificationService.createPostNotification(updatedPost.author, userId, updatedPost._id, 'comment'); // to, from, postId, type
+            await this.notificationService.createPostNotification(updatedPost.author._id, userId, updatedPost._id, 'comment'); // to, from, postId, type
             const populatedPost = await this.populateTagNames(updatedPost); //sostituisco gli ids dei tag con i nomi per la risposta
             return {data: populatedPost};
         } catch (error) {
