@@ -45,10 +45,10 @@ describe("Functional delete avatar test: DELETE /user/deleteAvatar ", () => {
       
       
       const res = await request(app) 
-      .delete("/user/deleteAvatar") 
+      .delete("/api/user/deleteAvatar") 
       .set("Authorization", `Bearer ${token}`) 
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(200);
       expect(res.body.avatarURL).to.equal(null);
     });

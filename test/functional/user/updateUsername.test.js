@@ -47,7 +47,7 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
 
         const newUsername = "newUsername";
         const res = await request(app)
-        .patch("/user/updateUsername")
+        .patch("/api/user/updateUsername")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ username: newUsername });
 
@@ -75,7 +75,7 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
 
         const newUsername = "newUsername";
         const res = await request(app)
-        .patch("/user/updateUsername")
+        .patch("/api/user/updateUsername")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ username: newUsername });
 
@@ -100,7 +100,7 @@ describe("Functional updateUsername test: POST /auth/updateUsername ", () => {
 
         const newUsername = "ab"; //username troppo corto
         const res = await request(app)
-        .patch("/user/updateUsername")
+        .patch("/api/user/updateUsername")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ username: newUsername });
 

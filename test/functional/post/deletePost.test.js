@@ -9,7 +9,7 @@ import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 
 
 
-describe("Functional countLikes test: get /post/:postId ", () => {
+describe("Functional countLikes test: get /api/post/:postId ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -37,11 +37,11 @@ describe("Functional countLikes test: get /post/:postId ", () => {
       const {newPostPayload, existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: "published"});
 
       const resLike = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`)
 
       const res = await request(app) 
-      .get("/post/" + existingPost._id) 
+      .get("/api/post/" + existingPost._id) 
 
       const postsInDB = await fixtureUtils.getPosts();
       expect(res.body.data.likesCount).to.equal(postsInDB[0].likesCount);      

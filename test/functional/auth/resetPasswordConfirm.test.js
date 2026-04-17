@@ -8,7 +8,7 @@ import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 
 
-describe("Functional test: POST /auth/resetPassword/confirm ", () => {
+describe("Functional test: POST /api/auth/resetPassword/confirm ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -31,7 +31,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
     await mongo.stop();
   });
 
-  describe("GET /auth/resetPassword/confirm success", () => {
+  describe("GET /api/auth/resetPassword/confirm success", () => {
     it("riceve il token tramite get, cerca il suo hash nel DB e notifica il FE se ok", async () => {
 
         const resetToken = cryptoUtils.generateRandomToken();
@@ -46,7 +46,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
         await fixtureUtils.createUser(userData);  //inserisce un utente nel DB in memoria
 
         const res = await request(app)      //invia il token precedentemente ricevuto via email
-        .get("/auth/resetPassword/confirm")
+        .get("/api/auth/resetPassword/confirm")
         .query({ token: resetToken });
 
         console.log("nel db in memory:", await UserModel.find({}));
@@ -58,7 +58,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
     }); 
   });
 
-  describe("GET /auth/resetPassword/confirm failure", () => {
+  describe("GET /api/auth/resetPassword/confirm failure", () => {
     it("riceve il token tramite get, cerca il suo hash nel DB ma è scaduto", async () => {
 
         const resetToken = cryptoUtils.generateRandomToken();
@@ -73,7 +73,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
         await fixtureUtils.createUser(userData);  //inserisce un utente nel DB in memoria
 
         const res = await request(app)      //invia il token scaduto
-        .get("/auth/resetPassword/confirm")
+        .get("/api/auth/resetPassword/confirm")
         .query({ token: resetToken });
 
         console.log("verifico res.body per privacy:", res.body);
@@ -98,7 +98,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
         await fixtureUtils.createUser(userData);  //inserisce un utente nel DB in memoria
 
         const res = await request(app)      //invia il token scaduto
-        .get("/auth/resetPassword/confirm")
+        .get("/api/auth/resetPassword/confirm")
         .query({ token: resetToken + "wrong" }); //rendo errato il token
 
       
@@ -124,7 +124,7 @@ describe("Functional test: POST /auth/resetPassword/confirm ", () => {
         const wrongToken = cryptoUtils.generateRandomToken(); //genero un token completamente diverso
 
         const res = await request(app)      //invia il token scaduto
-        .get("/auth/resetPassword/confirm")
+        .get("/api/auth/resetPassword/confirm")
         .query({ token: wrongToken }); //rendo errato il token
 
         // Verifica risposta

@@ -10,7 +10,7 @@ const { ObjectId } = mongoose.Types;
 
 
 
-describe("Functional delete a comment test: DELETE /post/:postId/comment/:commentId ", () => {
+describe("Functional delete a comment test: DELETE /api/post/:postId/comment/:commentId ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -39,7 +39,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
      
       
       const res = await request(app) 
-      .delete("/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id) 
+      .delete("/api/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id) 
       .set("Authorization", `Bearer ${token}`)        
       
 
@@ -54,7 +54,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
      
       
       const res = await request(app) 
-      .delete("/post/" + "id non valido" + "/comment"+ "/" + "altro id non valido") 
+      .delete("/api/post/" + "id non valido" + "/comment"+ "/" + "altro id non valido") 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -67,7 +67,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
      
       
       const res = await request(app) 
-      .delete("/post/" + new ObjectId().toString() + "/comment"+ "/" + existingPost.comments[0]._id) 
+      .delete("/api/post/" + new ObjectId().toString() + "/comment"+ "/" + existingPost.comments[0]._id) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -80,7 +80,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
      
       
       const res = await request(app) 
-      .delete("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
+      .delete("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
       .set("Authorization", `Bearer ${token}`)        
     
 
@@ -95,7 +95,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
      
       const res = await request(app) 
-      .delete("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
+      .delete("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
 
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
@@ -105,7 +105,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
      
       const res = await request(app) 
-      .delete("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
+      .delete("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
       .set("Authorization", `Bearer ${cryptoUtils.generateRandomToken(16)}`)
 
       expect(res.status).to.equal(401);
@@ -117,7 +117,7 @@ describe("Functional delete a comment test: DELETE /post/:postId/comment/:commen
       const user2 = await fixtureUtils.createUser();
      
       const res = await request(app) 
-      .delete("/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id)     
+      .delete("/api/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id)     
       .set("Authorization", `Bearer ${cryptoUtils.generateJWT({ userId: user2._id.toString() })}`)
 
       expect(res.status).to.equal(404);

@@ -10,7 +10,7 @@ import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmail
 
 
 
-describe("Functional verify email test: POST /auth/verifyEmail ", () => {
+describe("Functional verify email test: POST /api/auth/verifyEmail ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -34,7 +34,7 @@ describe("Functional verify email test: POST /auth/verifyEmail ", () => {
     await mongo.stop();
   });
 
-  describe("GET /auth/verifyEmail success", () => {
+  describe("GET /api/auth/verifyEmail success", () => {
     it("invia al server email e token di verifica, riceve codice 200 ", async () => {
         const hashedVerifictionToken = cryptoUtils.hashData("dummy-verification-token");
         const userToStore = {
@@ -52,7 +52,7 @@ describe("Functional verify email test: POST /auth/verifyEmail ", () => {
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         
         const res = await request(app)
-        .get(`/auth/verifyEmail?token=${verifyEmailData.token}`)
+        .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`)
         .set("X-Forwarded-For", "9.9.9.9"); // Imposta un IP fittizio per evitare problemi con il rate limiter durante i test
 
         // Verifica risposta
@@ -64,7 +64,7 @@ describe("Functional verify email test: POST /auth/verifyEmail ", () => {
     });
   });
 
-  describe("GET /auth/verifyEmail fail", () => {
+  describe("GET /api/auth/verifyEmail fail", () => {
       it("il server riceve token di verifica scaduto", async () => {
 
         const userToStore = {
@@ -81,7 +81,7 @@ describe("Functional verify email test: POST /auth/verifyEmail ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .get(`/auth/verifyEmail?token=${verifyEmailData.token}`)
+        .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`)
         .set("X-Forwarded-For", "9.9.9.9"); // Imposta un IP fittizio per evitare problemi con il rate limiter durante i test
 
         // Verifica risposta
@@ -106,7 +106,7 @@ describe("Functional verify email test: POST /auth/verifyEmail ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .get(`/auth/verifyEmail?token=${verifyEmailData.token}`)
+        .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`)
         .set("X-Forwarded-For", "9.9.9.9"); // Imposta un IP fittizio per evitare problemi con il rate limiter durante i test
 
         // Verifica risposta

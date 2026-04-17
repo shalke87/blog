@@ -41,11 +41,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       console.log("Payload del nuovo post:", newPostPayload);
 
       const res = await request(app) 
-      .patch("/post/update/" + existingPost._id) 
+      .patch("/api/post/update/" + existingPost._id) 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(200);
       expect(res.body.data.title).to.equal(newPostPayload.title);
       expect(res.body.data.content).to.equal(newPostPayload.content);
@@ -78,7 +78,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           const existingPost = await fixtureUtils.createPost(postToStore);
     
           const res = await request(app) 
-          .patch("/post/update/" + existingPost._id) 
+          .patch("/api/post/update/" + existingPost._id) 
           .set("Authorization", `Bearer ${token}`) 
           .send(newPostPayload);
     
@@ -128,7 +128,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           const existingPost = await fixtureUtils.createPost(postToStore);
     
           const res = await request(app) 
-          .patch("/post/update/" + existingPost._id) 
+          .patch("/api/post/update/" + existingPost._id) 
           .set("Authorization", `Bearer ${token}`) 
           .send(newPostPayload);
     
@@ -156,7 +156,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
         });
   });
 
-  describe("PATCH /post/update/:postId failure", () => {
+  describe("PATCH /api/post/update/:postId failure", () => {
     it("prova a modificare un post, utente non loggato", async () => { 
       
       const {newPostPayload, existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
@@ -164,10 +164,10 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       console.log("Payload del nuovo post:", newPostPayload);
 
       const res = await request(app) 
-      .patch("/post/update/" + existingPost._id) 
+      .patch("/api/post/update/" + existingPost._id) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal("Missing or invalid token");
     });
@@ -181,11 +181,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
 
       
       const res = await request(app) 
-      .patch("/post/update/" + existingPost._id) 
+      .patch("/api/post/update/" + existingPost._id) 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"title" length must be at least 3 characters long');
     });
@@ -200,11 +200,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
 
       
       const res = await request(app) 
-      .patch("/post/update/" + existingPost._id) 
+      .patch("/api/post/update/" + existingPost._id) 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"content" length must be at least 10 characters long');
     });
@@ -217,11 +217,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
 
       
       const res = await request(app) 
-      .patch("/post/update/" + existingPost._id) 
+      .patch("/api/post/update/" + existingPost._id) 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"status" must be one of [draft, published]');
     });
@@ -232,11 +232,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       console.log("Payload del nuovo post:", newPostPayload);
 
       const res = await request(app) 
-      .patch("/post/update/" + "invalidParam") 
+      .patch("/api/post/update/" + "invalidParam") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"postId" must only contain hexadecimal characters. "postId" length must be 24 characters long');
     });
@@ -247,11 +247,11 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       console.log("Payload del nuovo post:", newPostPayload);
 
       const res = await request(app) 
-      .patch("/post/update/") 
+      .patch("/api/post/update/") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(404);
     });
   });

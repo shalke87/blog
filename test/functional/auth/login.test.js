@@ -8,7 +8,7 @@ import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
 
 
-describe("Functional login test: POST /auth/login ", () => {
+describe("Functional login test: POST /api/auth/login ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -31,7 +31,7 @@ describe("Functional login test: POST /auth/login ", () => {
     await mongo.stop();
   });
 
-  describe("POST /auth/login success", () => {
+  describe("POST /api/auth/login success", () => {
     it("invia al server email e password, riceve codice 200 ", async () => {
 
         const userToStore = {
@@ -47,7 +47,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         // Verifica risposta
@@ -60,7 +60,7 @@ describe("Functional login test: POST /auth/login ", () => {
     });
   });
 
-  describe("POST /auth/login fail", () => {
+  describe("POST /api/auth/login fail", () => {
       it("invia al server email e password, riceve codice 401, status != active ", async () => {
 
         const userToStore = {
@@ -76,7 +76,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         // Verifica risposta
@@ -100,7 +100,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         // Verifica risposta
@@ -123,7 +123,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         // Verifica risposta
@@ -146,7 +146,7 @@ describe("Functional login test: POST /auth/login ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         // Verifica risposta

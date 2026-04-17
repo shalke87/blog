@@ -6,7 +6,7 @@ import UserModel from "../../../src/infrastructure/database/mongoose/models/user
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
-describe("Functional test: POST /auth/register con DB mockato in-memory", () => {
+describe("Functional test: POST /api/auth/register con DB mockato in-memory", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -29,7 +29,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
     await mongo.stop();
   });
 
-  describe("POST /auth/register success", () => {
+  describe("POST /api/auth/register success", () => {
     it("dovrebbe salvare l'utente nel DB mockato e restituire 201, senza restituire la password", async () => {
         const userData = {
         username: "testuser",
@@ -38,7 +38,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta
@@ -70,7 +70,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         console.log("Verifico utente creato nel DB in memory:", await UserModel.find({}));
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta
@@ -86,7 +86,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta
@@ -102,7 +102,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta
@@ -118,12 +118,12 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta
         expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal("La password deve contenere almeno 8 caratteri, includere almeno una lettera maiuscola, una minuscola, un numero e un carattere speciale (es. !@#$%^&*).");
+        expect(res.body.message).to.equal("The password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character (e.g. !@#$%^&*).");
     });
 
     it("dovrebbe restituire un errore 400 se password mancante", async () => {
@@ -134,7 +134,7 @@ describe("Functional test: POST /auth/register con DB mockato in-memory", () => 
         };
 
         const res = await request(app)
-        .post("/auth/register")
+        .post("/api/auth/register")
         .send(userData)
 
         // Verifica risposta

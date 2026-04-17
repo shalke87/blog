@@ -79,17 +79,18 @@ describe("Socket.IO + read post action", () => {
 
 
   describe("Post Read Action", () => {
-    it("should reach the post:read action success", (done) => {
+    it("should reach the post:getById action success", (done) => {
       const payload = {
         postId: post._id
       }
-      clientSocket.emit("post:read", payload, response => {
+      console.log("Emitting post:getById with payload:", payload);
+      clientSocket.emit("post:getById", payload, response => {
         console.log("RESPONSE:", response);
         expect(response).to.exist;
         expect(response.success).to.be.true;
         expect(response.result).to.exist;
         expect(response.result.data.title).to.equal("testpost");
-        expect(response.result.message).to.equal("Post read successfully.");
+        expect(response.result.message).to.equal("Post retrieved successfully.");
         done();
       });
       
@@ -97,11 +98,11 @@ describe("Socket.IO + read post action", () => {
   });
 
   describe("Post Read Action failure", () => {
-    it("should reach the post:read action but that post does not exist", (done) => {
+    it("should reach the post:getById action but that post does not exist", (done) => {
       const payload = {
         postId: new ObjectId().toString() // ID di un post che non esiste
       }
-      clientSocket.emit("post:read", payload, response => {
+      clientSocket.emit("post:getById", payload, response => {
         console.log("RESPONSE:", response);
         expect(response).to.exist;
         expect(response.success).to.be.false;

@@ -12,18 +12,26 @@ class NotificationService {
                 console.log("Not sending notification to self for userId:", from);
                 return; // Non inviare notifiche a se stessi
             }
-            const notification = await NotificationRepository.createNotification(to, from, postId, type);
-            const fromUser = await AuthService.getUserById(from); // 1. Recupero dati dell'utente mittente
             if (!this.io) {
                 console.warn("Socket.io instance not available. Cannot emit notification.");
                 return;
             }
-            this.io.to(to.toString()).emit("notification:new", { id: notification._id.toString(), type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
-            console.log("Notification emitted to user:", to, "with data:", { id: notification._id.toString(), type, postId, fromUser: fromUser });
+            const fromUser = await AuthService.getUserById(from); // 1. Recupero dati dell'utente mittente
+            if (type !== 'refresh') { // salvo la notifica solo se è un like o comento, se è un refresh emetto solo un evento per aggiornare la pagian real-time
+                console.log("Creating notification for user:", to, "from user:", fromUser.username, "for postId:", postId, "with type:", type);
+                const notification = await NotificationRepository.createNotification(to, from, postId, type); // 1. Salvataggio notifica nel database
+                this.io.to(to._id.toString()).emit("notification:new", { id: notification._id.toString(), type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
+                console.log("Notification emitted to user:", to, "with data:", { id: notification._id.toString(), type, postId, fromUser: fromUser });
+            } else {
+                this.io.to(to._id.toString()).emit("notification:new", { to, type, postId, fromUser: fromUser.username });  // 2. Emissione evento real-time 
+            }
+            
         } catch (error) {
             throw error;
         }
     }
+
+
 
     async sendPendingNotifications(userId, socket) {
         try{

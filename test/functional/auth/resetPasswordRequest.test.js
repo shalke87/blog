@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 
 
-describe("Functional test: POST /auth/resetPassword ", () => {
+describe("Functional test: POST /api/auth/resetPassword ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -28,14 +28,14 @@ describe("Functional test: POST /auth/resetPassword ", () => {
     await mongo.stop();
   });
 
-  describe("POST /auth/resetPassword success", () => {
+  describe("POST /api/auth/resetPassword success", () => {
     it("dovrebbe generare un token, inviarlo all'utente che ha richiesto il reset della password e memorizzare il suo hash e la sua scadenza nel database", async () => {
         const userData = {
         email: "test@example.com"
         };
 
         const res = await request(app)
-        .post("/auth/resetPassword")
+        .post("/api/auth/resetPassword")
         .send(userData)
 
         // Verifica risposta

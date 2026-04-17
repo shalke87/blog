@@ -38,7 +38,7 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "Questo è un commento di test." });
 
@@ -48,12 +48,12 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
     });
   });
 
-  describe("POST /post/:postId/comment failure - validation tests", () => {
+  describe("POST /api/post/:postId/comment failure - validation tests", () => {
     it("aggiunge un commento vuoto - 400", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "" });
 
@@ -66,7 +66,7 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({});
 
@@ -79,7 +79,7 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({ extraField: "extraValue", text: "Questo è un commento di test." });
 
@@ -92,7 +92,7 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({ extraField: "extraValue", text: "Questo è un commento di test." });
 
@@ -103,12 +103,12 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
     }); 
   });
 
-  describe("POST /post/:postId/comment failure - authorization tests", () => {
+  describe("POST /api/post/:postId/comment failure - authorization tests", () => {
     it("aggiunge un commento - utente non loggato - 401", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + existingPost._id + "/comment") 
+      .post("/api/post/" + existingPost._id + "/comment") 
       .send({ text: "Questo è un commento di test." });
 
       expect(res.status).to.equal(401);
@@ -120,7 +120,7 @@ describe("Functional add a comment test: POST /post/:postId/comment ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .post("/post/" + new ObjectId() + "/comment") 
+      .post("/api/post/" + new ObjectId() + "/comment") 
       .set("Authorization", `Bearer ${token}`) 
       .send({ text: "Questo è un commento di test." });
 

@@ -39,7 +39,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id) 
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -49,13 +49,13 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
     });
   });
 
-  describe("PATCH /post/:postId/comment failure - validation tests", () => {
+  describe("PATCH /api/post/:postId/comment failure - validation tests", () => {
     it("id non validi, restituisce 400", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
      
       
       const res = await request(app) 
-      .patch("/post/" + "id non valido" + "/comment"+ "/" + "altro id non valido") 
+      .patch("/api/post/" + "id non valido" + "/comment"+ "/" + "altro id non valido") 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -68,7 +68,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + new ObjectId().toString() + "/comment"+ "/" + existingPost.comments[0]._id) 
+      .patch("/api/post/" + new ObjectId().toString() + "/comment"+ "/" + existingPost.comments[0]._id) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -81,7 +81,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "Questa è una modifica del commento." });
 
@@ -94,7 +94,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
       .set("Authorization", `Bearer ${token}`)        
       
 
@@ -107,7 +107,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "" });
 
@@ -120,7 +120,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
      
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString()) 
       .set("Authorization", `Bearer ${token}`)        
       .send({ text: "un commento corretto", extraField: "extraValue" });
 
@@ -130,12 +130,12 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
     
   });
 
-  describe("PATCH /post/:postId/comment failure - authorization tests", () => {
+  describe("PATCH /api/post/:postId/comment failure - authorization tests", () => {
     it("nessun token", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
      
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
       .send({ text: "un commento corretto"});
 
       expect(res.status).to.equal(401);
@@ -146,7 +146,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
      
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + new ObjectId().toString())     
       .set("Authorization", `Bearer ${cryptoUtils.generateRandomToken(16)}`)
       .send({ text: "un commento corretto"});
 
@@ -159,7 +159,7 @@ describe("Functional update a comment test: PATCH /post/:postId/comment/:comment
       const user2 = await fixtureUtils.createUser();
      
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id)     
+      .patch("/api/post/" + existingPost._id + "/comment"+ "/" + existingPost.comments[0]._id)     
       .set("Authorization", `Bearer ${cryptoUtils.generateJWT({ userId: user2._id.toString() })}`)
       .send({ text: "un commento corretto"});
 

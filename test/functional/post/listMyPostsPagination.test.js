@@ -10,7 +10,7 @@ import config from "../../../config/config.js";
 
 
 
-describe("Functional list pagination test: GET /post/listMine ", () => {
+describe("Functional list pagination test: GET /api/post/listMine ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,7 +33,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
     await mongo.stop();
   });
 
-  describe("GET /post/listMine pagination test success", () => {
+  describe("GET /api/post/listMine pagination test success", () => {
     it("legge una pagina di post pubblicati - utente non loggato", async () => { 
       const user = await fixtureUtils.createUser({
         username: "testuser",
@@ -54,7 +54,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const limit = 10;
 
       const res = await request(app) 
-      .get(`/post/listMine?page=${page}&limit=${limit}`);
+      .get(`/api/post/listMine?page=${page}&limit=${limit}`);
 
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');
@@ -63,7 +63,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
     it("lancia listPublished - 0 contenuti", async () => { 
       
       const res = await request(app) 
-      .get("/post/listPublished");
+      .get("/api/post/listPublished");
       
       expect(res.status).to.equal(200);
       expect(res.body.data).to.deep.equal([]); //verifico che l'array sia vuoto
@@ -73,7 +73,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
     it("non passa valori di page e limit, validator imposta i default", async () => { 
       
       const res = await request(app) 
-      .get(`/post/listPublished`);
+      .get(`/api/post/listPublished`);
 
       expect(res.status).to.equal(200);
       expect(res.body.data).to.deep.equal([]); //verifico che l'array sia vuoto
@@ -81,7 +81,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
 
   });
 
-  describe("GET /post/listPublished pagination failure", () => {
+  describe("GET /api/post/listPublished pagination failure", () => {
 
     it("passa un limite fuori range, errore 400 del validator", async () => { 
       
@@ -89,7 +89,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const limit = 200;
 
       const res = await request(app) 
-      .get(`/post/listPublished?page=${page}&limit=${limit}`);
+      .get(`/api/post/listPublished?page=${page}&limit=${limit}`);
       
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"limit" must be less than or equal to 100');
@@ -101,7 +101,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const limit = "ten";
 
       const res = await request(app) 
-      .get(`/post/listPublished?page=${page}&limit=${limit}`);
+      .get(`/api/post/listPublished?page=${page}&limit=${limit}`);
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal('"page" must be a number. "limit" must be a number');
     });
@@ -112,7 +112,7 @@ describe("Functional list pagination test: GET /post/listMine ", () => {
       const limit = 10;
 
       const res = await request(app) 
-      .get(`/post/listMine?page=${page}&limit=${limit}`);
+      .get(`/api/post/listMine?page=${page}&limit=${limit}`);
       
       expect(res.status).to.equal(401);
       expect(res.body.message).to.equal('Missing or invalid token');

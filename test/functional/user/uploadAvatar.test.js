@@ -59,12 +59,12 @@ describe("Functional upload avatar test: POST /user/uploadAvatar ", () => {
       const fileName = "test_avatar.png";
       
       const res = await request(app) 
-      .patch("/user/uploadAvatar") 
+      .patch("/api/user/uploadAvatar") 
       .set("Authorization", `Bearer ${token}`) 
       .attach("avatar", `test/fixtures/files/${fileName}`) // <-- QUI fai l’upload 
 
       const regex = new RegExp( `^\\/uploads\\/avatars\\/[a-f0-9]{24}-\\d+-${fileName}$` ); 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(200);
       expect(res.body.avatarURL).to.match(regex);
     });
@@ -82,11 +82,11 @@ describe("Functional upload avatar test: POST /user/uploadAvatar ", () => {
       const fileName = "wrong_file_name.png";
       
       const res = await request(app) 
-      .patch("/user/uploadAvatar") 
+      .patch("/api/user/uploadAvatar") 
       .set("Authorization", `Bearer ${token}`) //non invio nessun file
       
       const regex = new RegExp( `^\\/uploads\\/avatars\\/[a-f0-9]{24}-\\d+-${fileName}$` ); 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal("No file uploaded.");
     });
@@ -106,13 +106,13 @@ describe("Functional upload avatar test: POST /user/uploadAvatar ", () => {
       const fileName = "wrong_file_name.png";
       
       const res = await request(app) 
-      .patch("/user/uploadAvatar") 
+      .patch("/api/user/uploadAvatar") 
       .set("Authorization", `Bearer ${token}`) //non invio nessun file
       .attach("avatar", tmpFile)
       
       fs.unlinkSync(tmpFile);
       const regex = new RegExp( `^\\/uploads\\/avatars\\/[a-f0-9]{24}-\\d+-${fileName}$` ); 
-      console.log(res.body); 
+      console.log("res.body:", res.body); 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.equal("File too large");
     });

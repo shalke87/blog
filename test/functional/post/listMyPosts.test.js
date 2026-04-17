@@ -10,7 +10,7 @@ import config from "../../../config/config.js";
 
 
 
-describe("Functional list my posts test: GET /post/listMine ", () => {
+describe("Functional list my posts test: GET /api/post/listMine ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,7 +33,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
     await mongo.stop();
   });
 
-  describe("GET /post/listMine success", () => {
+  describe("GET /api/post/listMine success", () => {
     it("legge tutti i post di un utente loggato", async () => { 
       const {existingPost, userStored, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
       const post2 = await fixtureUtils.createPost({
@@ -54,7 +54,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       posts.push(existingPost);
 
       const res = await request(app) 
-      .get("/post/listMine")
+      .get("/api/post/listMine")
       .set("Authorization", `Bearer ${token}`);
       
       expect(res.status).to.equal(200);
@@ -74,7 +74,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       });
       
       const res = await request(app) 
-      .get("/post/listMine")
+      .get("/api/post/listMine")
       .set("Authorization", `Bearer ${token}`);
       
 
@@ -87,7 +87,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
 
   });
 
-  describe("GET /post/read/:postId success", () => {
+  describe("GET /api/post/read/:postId success", () => {
     it("lancia listMine utente non loggato - 401", async () => { 
 
       const {existingPost, userStored, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {
@@ -97,7 +97,7 @@ describe("Functional list my posts test: GET /post/listMine ", () => {
       });
       
       const res = await request(app) 
-      .get("/post/listMine")
+      .get("/api/post/listMine")
           
 
       expect(res.status).to.equal(401);

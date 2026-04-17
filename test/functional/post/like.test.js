@@ -10,7 +10,7 @@ const { ObjectId } = mongoose.Types;
 
 
 
-describe("Functional test for liking a post: POST /post/:postId/like ", () => {
+describe("Functional test for liking a post: PATCH /api/post/:postId/like ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,12 +33,12 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
     await mongo.stop();
   });
 
-  describe("POST /post/:postId/like success", () => {
+  describe("PATCH /api/post/:postId/like success", () => {
     it("aggiunge un like e restituisce 200", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
       expect(res.body.liked).to.equal(true);
@@ -49,14 +49,14 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
       const inMemoryPosts = await fixtureUtils.getPosts();
       console.log("In-memory posts after like/unlike:", inMemoryPosts);
 
       const res2 = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
 
@@ -68,13 +68,13 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
   });
 
 
-  describe("PATCH /post/:postId/like failure", () => {
+  describe("PATCH /api/post/:postId/like failure", () => {
     
     it("mette like a un post in stato draft - 404", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.DRAFT});
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
       expect(res.status).to.equal(404);
@@ -83,12 +83,12 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
 
   });
 
-  describe("POST /post/:postId/comment failure - authorization tests", () => {
+  describe("POST /api/post/:postId/comment failure - authorization tests", () => {
     it("aggiunge un commento - utente non loggato - 401", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .patch("/post/" + existingPost._id + "/like") 
+      .patch("/api/post/" + existingPost._id + "/like") 
    
 
       expect(res.status).to.equal(401);
@@ -99,7 +99,7 @@ describe("Functional test for liking a post: POST /post/:postId/like ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload();
       
       const res = await request(app) 
-      .patch("/post/" + new ObjectId() + "/like") 
+      .patch("/api/post/" + new ObjectId() + "/like") 
       .set("Authorization", `Bearer ${token}`) 
 
       expect(res.status).to.equal(404);

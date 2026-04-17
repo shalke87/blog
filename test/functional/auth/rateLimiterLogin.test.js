@@ -8,7 +8,7 @@ import configFile from "../../../config/authConfig.js";
 import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmailRateLimiter.js";
 
 
-describe("Functional login test con rate limiter: POST /auth/login ", () => {
+describe("Functional login test con rate limiter: POST /api/auth/login ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,7 +33,7 @@ describe("Functional login test con rate limiter: POST /auth/login ", () => {
 
   
 
-  describe("POST /auth/login fail", () => {
+  describe("POST /api/auth/login fail", () => {
       
     it("rate limiter - fa 2 tentativi di login falliti e poi blocca il terzo tentativo", async () => {
 
@@ -52,13 +52,13 @@ describe("Functional login test con rate limiter: POST /auth/login ", () => {
         const res = [];
         for (let i = 0; i < configFile.RATE_LIMIT.MAX_LOGIN_ATTEMPTS; i++) {
           res[i] = await request(app)
-          .post("/auth/login")
+          .post("/api/auth/login")
           .send(loginData);
         }
 
         // Verifica risposta oltre max tentativi
         const res2 = await request(app)
-        .post("/auth/login")
+        .post("/api/auth/login")
         .send(loginData);
 
         

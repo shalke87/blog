@@ -7,7 +7,7 @@ import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 
 
-describe("Functional test: POST /auth/resetPassword/updatePassword ", () => {
+describe("Functional test: POST /api/auth/resetPassword/updatePassword ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -48,7 +48,7 @@ describe("Functional test: POST /auth/resetPassword/updatePassword ", () => {
 
         await fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .patch("/auth/resetPassword/updatePassword")
+        .patch("/api/auth/resetPassword/updatePassword")
         .send(userData)
 
         const updatedUser = (await fixtureUtils.getUsers({email: userToStore.email}))[0]; //restituisce array la voglio il suo unico elemento
@@ -81,7 +81,7 @@ describe("Functional test: POST /auth/resetPassword/updatePassword ", () => {
 
         const userInDB = fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .patch("/auth/resetPassword/updatePassword")
+        .patch("/api/auth/resetPassword/updatePassword")
         .send(userData)
 
         // Verifica risposta
@@ -109,7 +109,7 @@ describe("Functional test: POST /auth/resetPassword/updatePassword ", () => {
 
         const userInDB = fixtureUtils.createUser(userToStore);  //inserisce un utente nel DB in memoria
         const res = await request(app)
-        .patch("/auth/resetPassword/updatePassword")
+        .patch("/api/auth/resetPassword/updatePassword")
         .send(userData)
 
         // Verifica risposta

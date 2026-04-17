@@ -9,7 +9,7 @@ class PostController {
         this.addPost = this.addPost.bind(this);
         this.updatePost = this.updatePost.bind(this);
         this.deletePost = this.deletePost.bind(this);
-        this.readPost = this.readPost.bind(this);
+        this.getPostById = this.getPostById.bind(this);
         this.listPublished = this.listPublished.bind(this);
         this.listMine = this.listMine.bind(this);
         this.addComment = this.addComment.bind(this);
@@ -52,14 +52,14 @@ class PostController {
         }
     }
 
-    async readPost(req, res, next) {
+    async getPostById(req, res, next) {
         if (req.userId) {
             console.log("User is authenticated with userId:", req.userId);
             // Additional logic for authenticated users can be added here
         }
         try {
-            console.log("Entering readPost controller with userId:", req.userId);
-            const result = await this.postService.readPost(req.userId, req.params.postId);
+            console.log("Entering getPostById controller with userId:", req.userId);
+            const result = await this.postService.getPostById(req.userId, req.params.postId);
             res.status(200).json(result);
         } catch (err) {
             next(err);

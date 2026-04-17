@@ -10,7 +10,7 @@ import config from "../../../config/config.js";
 
 
 
-describe("Functional list post test: GET /post/listPublished ", () => {
+describe("Functional list post test: GET /api/post/listPublished ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -33,7 +33,7 @@ describe("Functional list post test: GET /post/listPublished ", () => {
     await mongo.stop();
   });
 
-  describe("GET /post/listPublished success", () => {
+  describe("GET /api/post/listPublished success", () => {
     it("legge una lista di post pubblicati - utente non loggato", async () => { 
       const {existingPost, userStored} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
       const post2 = await fixtureUtils.createPost({
@@ -50,7 +50,7 @@ describe("Functional list post test: GET /post/listPublished ", () => {
       });
 
       const res = await request(app) 
-      .get("/post/listPublished");
+      .get("/api/post/listPublished");
       
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
@@ -64,7 +64,7 @@ describe("Functional list post test: GET /post/listPublished ", () => {
     it("lancia listPublished - 0 contenuti", async () => { 
       
       const res = await request(app) 
-      .get("/post/listPublished");
+      .get("/api/post/listPublished");
       
       expect(res.status).to.equal(200);
       expect(res.body.data).to.deep.equal([]); //verifico che l'array sia vuoto
@@ -73,7 +73,7 @@ describe("Functional list post test: GET /post/listPublished ", () => {
 
   });
 
-  describe("GET /post/read/:postId failure", () => {
+  describe("GET /api/post/read/:postId failure", () => { 
     
   });
 });

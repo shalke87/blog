@@ -11,7 +11,7 @@ import e from "express";
 
 
 
-describe("Functional add post test: POST /post/addPost ", () => {
+describe("Functional add post test: POST /api/post/addPost ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -52,7 +52,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       };
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -94,7 +94,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       };
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -136,7 +136,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       };
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -162,7 +162,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       console.log("Payload del nuovo post:", newPostPayload);
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .send(newPostPayload);
 
       console.log(res.body); 
@@ -191,7 +191,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
 
       
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -221,7 +221,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
 
       
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -251,7 +251,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
 
       
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -277,7 +277,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       };
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 
@@ -303,7 +303,7 @@ describe("Functional add post test: POST /post/addPost ", () => {
       };
 
       const res = await request(app) 
-      .post("/post/add") 
+      .post("/api/post/add") 
       .set("Authorization", `Bearer ${token}`) 
       .send(newPostPayload);
 

@@ -21,7 +21,7 @@ class PostActions {
         this.socket.on("post:create", this.createPost.bind(this));
         this.socket.on("post:update", this.updatePost.bind(this));
         this.socket.on("post:delete", this.deletePost.bind(this));
-        this.socket.on("post:read", this.readPost.bind(this));
+        this.socket.on("post:getById", this.getPostById.bind(this));
         this.socket.on("post:listPublished", this.listPublished.bind(this));
         this.socket.on("post:listMine", this.listMine.bind(this));
         this.socket.on("post:addComment", this.addComment.bind(this));
@@ -77,17 +77,17 @@ class PostActions {
         }
     }
 
-    async readPost(payload, ack) {
+    async getPostById(payload, ack) {
         try {
             const {error, value} = postIdPayloadSchema.validate(payload);
             if(error) {
                 throw new Error("Validation error: " + error.details.map(d => d.message).join(", "));
             }
-            const result = await this.postService.readPost(this.socket.userId, value.postId);
-            result.message = "Post read successfully.";
+            const result = await this.postService.getPostById(this.socket.userId, value.postId);
+            result.message = "Post retrieved successfully.";
             ack({ success: true, result });
         } catch (err) {
-            console.error("Error reading post:", err);
+            console.error("Error retrieving post:", err);
             ack({ success: false, error: err.message });
         }
     }

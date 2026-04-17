@@ -67,14 +67,14 @@ class PostService {
         }
     }
 
-    async readPost(userId, postId) {
+    async getPostById(userId, postId) {
         const post = await PostRepository.getPostById(postId);
 
         if (!post) {
             throw new NotFoundError("Resource not found");
         }
 
-        console.log("Post retrieved in readPost:", post);
+        console.log("Post retrieved in getPostById:", post);
 
         if (post.status === "published") {
             const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
@@ -82,7 +82,7 @@ class PostService {
         }
 
         if (post.status === "draft") {
-            if (!userId || post.author.toString() !== userId) {
+            if (!userId || post.author._id.toString() !== userId) {
                 throw new NotFoundError("Resource not found");
             }
             const populatedPost = await this.populateTagNames(post); //sostituisco gli ids dei tag con i nomi per la risposta
@@ -164,13 +164,17 @@ class PostService {
             }
             const alreadyLiked = post.likes.some(id => id.toString() === userId);
             if(alreadyLiked) {
+                // Rimuovi il like
                 const result = await PostRepository.removeLike(postId, userId);
-                return {liked: false, likesCount: result.likesCount, data: result};
+                const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
+                await this.notificationService.createPostNotification(post.author, userId, post._id, 'refresh'); // to, from, postId, type
+                return {liked: false, likesCount: result.likesCount, data: populatedPost};
             } else {
                 // Aggiungi il like
                 const result = await PostRepository.addLike(postId, userId);
+                const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
                 await this.notificationService.createPostNotification(post.author, userId, post._id, 'like'); // to, from, postId, type
-                return {liked: true, likesCount: result.likesCount, data: result};
+                return {liked: true, likesCount: result.likesCount, data: populatedPost};
             }
         } catch (error) {
             throw error;

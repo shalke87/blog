@@ -9,7 +9,7 @@ import authConfig from "../../../config/authConfig.js";
 import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmailRateLimiter.js";
 
 
-describe("Functional verify email test con rate limiter: GET /auth/verifyEmail ", () => {
+describe("Functional verify email test con rate limiter: GET /api/auth/verifyEmail ", () => {
   let mongo;
   // Avvio del DB in-memory + connessione Mongoose
   before(async () => {
@@ -34,7 +34,7 @@ describe("Functional verify email test con rate limiter: GET /auth/verifyEmail "
 
   
 
-  describe("GET /auth/verifyEmail fail", () => {
+  describe("GET /api/auth/verifyEmail fail", () => {
       
     it("rate limiter - fa MAX_EMAIL_VERIFICATION_ATTEMPTS tentativi di verifica email falliti e poi blocca il terzo tentativo", async () => {
 
@@ -58,13 +58,13 @@ describe("Functional verify email test con rate limiter: GET /auth/verifyEmail "
         console.log(`Max verify email attempts: ${authConfig.RATE_LIMIT.MAX_EMAIL_VERIFICATION_ATTEMPTS}`);
         for (let i = 0; i < authConfig.RATE_LIMIT.MAX_EMAIL_VERIFICATION_ATTEMPTS; i++) {
           res[i] = await request(app)
-          .get(`/auth/verifyEmail?token=${verifyEmailData.token}`);
+          .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`);
           console.log(`Tentativo ${i + 1}: Status ${res[i].status}, Remaining: ${res[i].headers['ratelimit-remaining']}`);
         }
 
         // Verifica risposta oltre max tentativi
         const res2 = await request(app)
-        .get(`/auth/verifyEmail?token=${verifyEmailData.token}`);
+        .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`);
 
         
         expect(res2.status).to.equal(429);

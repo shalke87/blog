@@ -47,7 +47,7 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
 
         const newPassword = "NewPassword01!";
         const res = await request(app)
-        .patch("/user/updatePassword")
+        .patch("/api/user/updatePassword")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ oldPassword: userToStore.password, newPassword: newPassword });
 
@@ -75,7 +75,7 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
 
         const newPassword = "NewPassword01!";
         const res = await request(app)
-        .patch("/user/updatePassword")
+        .patch("/api/user/updatePassword")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ oldPassword: userToStore.password, newPassword: newPassword });
 
@@ -100,7 +100,7 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
 
         const newPassword = "ab"; //password troppo corta
         const res = await request(app)
-        .patch("/user/updatePassword")
+        .patch("/api/user/updatePassword")
         .set("Authorization", `Bearer ${tokenJWT}`)
         .send({ oldPassword: userToStore.password, newPassword: newPassword });
 

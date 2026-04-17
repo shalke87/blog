@@ -17,7 +17,7 @@ export default {
         console.log("Updating post with data:", data);
         try {
             const post = await PostModel.findByIdAndUpdate({ _id: postId, author: userId }, data, { new: true })
-                .populate("author", "username");
+                .populate("author", "username avatarURL");
             return post.toObject();
         } catch (error) {
             console.error("Error updating post:", error);
@@ -42,11 +42,14 @@ export default {
 
     async getPostById(postId) {
         try {
-            const post = await PostModel.findOne({ _id: postId });
+            const post = await PostModel.findOne({ _id: postId })
+            .populate("author", "username avatarURL")
+            .populate("comments.author", "username avatarURL")
+            .lean();
             if (!post) {
                 return null;
             }
-            return post.toObject();
+            return post;
         } catch (error) {
             console.error("Error retrieving post by ID:", error);
             throw error;
@@ -60,7 +63,7 @@ export default {
                 .skip(skip)
                 .limit(limit)
                 .populate("author", "username avatarURL")
-                .populate("comments.author", "username")
+                .populate("comments.author", "username avatarURL")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
             console.log("Posts retrieved in getAllPublishedPosts:", posts);
@@ -76,8 +79,8 @@ export default {
             const posts = await PostModel.find(
                 { status: config.POST_STATUS.PUBLISHED, $text: { $search: query } },  // $text è l'indice definito nel modello
                 { score: { $meta: "textScore" } })
-                .populate("author", "username")
-                .populate("comments.author", "username")
+                .populate("author", "username avatarURL")
+                .populate("comments.author", "username avatarURL")
                 .lean();
             const totalDocs = await PostModel.countDocuments({ status: config.POST_STATUS.PUBLISHED });
             return { posts, totalDocs };
@@ -93,7 +96,7 @@ export default {
             const posts = await PostModel.find({ author: authorId })
                 .skip(skip)
                 .limit(limit)
-                .populate("author", "username")
+                .populate("author", "username avatarURL")
                 .lean();
 
             const totalDocs = await PostModel.countDocuments({ author: authorId });
@@ -121,11 +124,11 @@ export default {
             )
                 .populate({
                     path: "comments.author",
-                    select: "_id username"
+                    select: "_id username avatarURL"
                 })
                 .populate({
                     path: "author",
-                    select: "_id username"
+                    select: "_id username avatarURL"
                 })
 
             if (!updatedPost) {
@@ -152,11 +155,11 @@ export default {
                 { new: true }
             ).populate({
                 path: "comments.author",
-                select: "_id username"
+                select: "_id username avatarURL"
             })
                 .populate({
                     path: "author",
-                    select: "_id username"
+                    select: "_id username avatarURL"
                 })
 
             if (!updatedPost) {
@@ -180,10 +183,10 @@ export default {
                     }
                 },
                 { new: true }
-            ).populate("author", "username")
+            ).populate("author", "username avatarURL")
             .populate({
                 path: "comments.author",
-                select: "_id username"
+                select: "_id username avatarURL"
             });
 
             if (!updatedPost) {
@@ -202,7 +205,9 @@ export default {
             { _id: postId },
             { $addToSet: { likes: userId }, $inc: { likesCount: 1 } },
             { new: true }
-        ).populate("author", "username");
+        ).populate("author", "username avatarURL")
+        .populate("comments.author", "username avatarURL")
+        .lean();
         return result;
     },
 
@@ -211,7 +216,9 @@ export default {
             { _id: postId },
             { $pull: { likes: userId }, $inc: { likesCount: -1 } },
             { new: true }
-        ).populate("author", "username");
+        ).populate("author", "username avatarURL")
+        .populate("comments.author", "username avatarURL")
+        .lean();
         return result;
     },
 
@@ -220,7 +227,9 @@ export default {
             const posts = await PostModel.find(
                 { status: config.POST_STATUS.PUBLISHED, tags: { $in: tagIds } }
             )
-                .populate("author", "username").lean();
+                .populate("author", "username avatarURL")
+                .populate("comments.author", "username avatarURL")
+                .lean();
             return posts;
         } catch (error) {
             console.error("Error retrieving posts by tag IDs:", error);
