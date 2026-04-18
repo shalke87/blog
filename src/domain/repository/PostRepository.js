@@ -62,6 +62,7 @@ export default {
             const posts = await PostModel.find({ status: config.POST_STATUS.PUBLISHED })
                 .skip(skip)
                 .limit(limit)
+                .sort({ publishedAt: -1 }) // Ordina per data di pubblicazione decrescente
                 .populate("author", "username avatarURL")
                 .populate("comments.author", "username avatarURL")
                 .lean();
