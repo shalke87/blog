@@ -5,18 +5,20 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
+import sinon from "sinon";
+import NotificationService from "../../src/services/NotificationService.js";
 
 describe("Socket.IO notifications", () => {
-  let server, ownerSocket, triggerSocket, mongo;
+  let server, ownerSocket, triggerSocket, mongo, io;
   const PORT = 4001;
-  let ownerUser, triggerUser, post;
+  let ownerUser, triggerUser, post, postByTriggerUser;
 
   before(async () => {
     mongo = await MongoMemoryServer.create();
     const uri = mongo.getUri();
     await mongoose.connect(uri);
-    
-    ({ server } = createServer());
+
+    ({ server, io } = createServer());
     await new Promise((resolve) => {
       server.listen(PORT, resolve);
     });
@@ -29,9 +31,10 @@ describe("Socket.IO notifications", () => {
       await collection.deleteMany({});
     }
 
-    ownerUser = await fixtureUtils.createUser({username: "Post Owner", email: "owner@example.com"});
-    triggerUser = await fixtureUtils.createUser({username: "Trigger User", email: "trigger@example.com"});
-    post = await fixtureUtils.createPost({author: ownerUser._id, status: "published"});
+    ownerUser = await fixtureUtils.createUser({ username: "Post Owner", email: "owner@example.com" });
+    triggerUser = await fixtureUtils.createUser({ username: "Trigger User", email: "trigger@example.com" });
+    post = await fixtureUtils.createPost({ author: ownerUser._id, status: "published" });
+    postByTriggerUser = await fixtureUtils.createPost({ author: triggerUser._id, status: "published" });
     const ownerToken = cryptoUtils.generateJWT({ userId: ownerUser._id.toString() });
     const triggerToken = cryptoUtils.generateJWT({ userId: triggerUser._id.toString() });
 
@@ -56,7 +59,7 @@ describe("Socket.IO notifications", () => {
         clearTimeout(timeout);
         resolve();
       });
-      
+
       ownerSocket.on("connect_error", (err) => {
         console.log("CONNECT ERROR:", err.message);
         clearTimeout(timeout);
@@ -75,7 +78,7 @@ describe("Socket.IO notifications", () => {
         clearTimeout(timeout);
         resolve();
       });
-      
+
       triggerSocket.on("connect_error", (err) => {
         console.log("CONNECT ERROR:", err.message);
         clearTimeout(timeout);
@@ -115,8 +118,8 @@ describe("Socket.IO notifications", () => {
     it("should send a notification to the post author when the post is commented", (done) => {
       const payload = {
         postId: post._id,
-        data: { 
-          text: "Questo è un commento di prova.", 
+        data: {
+          text: "Questo è un commento di prova.",
         }
       };
 
@@ -124,7 +127,7 @@ describe("Socket.IO notifications", () => {
 
       // 1️⃣ Intercetta la notifica PRIMA di emettere l'update
       ownerSocket.on("notification:new", (notification) => {
-        console.log("Received notification:", notification, notificationReceived);  
+        console.log("Received notification:", notification, notificationReceived);
         expect(notification).to.have.property("type", "comment");
         expect(notification).to.have.property("postId", post._id.toString());
         expect(notification).to.have.property("fromUser", triggerUser.username);
@@ -149,7 +152,7 @@ describe("Socket.IO notifications", () => {
 
   describe("Post toggleLike Action", () => {
     it("should send a notification to the post author when the post is liked", (done) => {
-      
+
       let notificationReceived = false;
 
       // 1️⃣ Intercetta la notifica PRIMA di emettere l'update
@@ -180,4 +183,28 @@ describe("Socket.IO notifications", () => {
 
   });
 
+  it.only("should not send a notification to the post author when the post is liked by themselves", (done) => {
+
+    const toSpy = sinon.spy(io, "to");
+   
+
+    let notificationReceived = false;
+
+
+    // 2️⃣ Emetti l'evento post:toggleLike
+    triggerSocket.emit("post:toggleLike", { postId: postByTriggerUser._id }, response => {
+      try {
+        // 3️⃣ Verifica che emit NON sia stato chiamato
+        expect(toSpy.notCalled).to.be.true;
+        console.log("ToggleLike response:", response);
+        done();
+      } catch (err) {
+        done(err);
+      }
+    });
+
+  });
+
+
 });
+

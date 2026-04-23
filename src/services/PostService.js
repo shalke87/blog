@@ -167,13 +167,13 @@ class PostService {
                 // Rimuovi il like
                 const result = await PostRepository.removeLike(postId, userId);
                 const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
-                await this.notificationService.createPostNotification(post.author, userId, post._id, 'refresh'); // to, from, postId, type
+                await this.notificationService.createPostNotification(post.author._id, userId, post._id, 'refresh'); // to, from, postId, type
                 return {liked: false, likesCount: result.likesCount, data: populatedPost};
             } else {
                 // Aggiungi il like
                 const result = await PostRepository.addLike(postId, userId);
                 const populatedPost = await this.populateTagNames(result); //sostituisco gli ids dei tag con i nomi per la risposta
-                await this.notificationService.createPostNotification(post.author, userId, post._id, 'like'); // to, from, postId, type
+                await this.notificationService.createPostNotification(post.author._id, userId, post._id, 'like'); // to, from, postId, type
                 return {liked: true, likesCount: result.likesCount, data: populatedPost};
             }
         } catch (error) {
