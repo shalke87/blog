@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node dist/server.js",
     "test": "NODE_ENV=test mocha --require tsx/esm --file test/setup.js \"test/**/*.test.js\" --timeout 5000 --recursive",
     "coverage": "c8 --reporter=text --reporter=html npm test",
     "dev": "nodemon --exec tsx --env-file=.env src/server.ts",
-    "build": "tsc --noEmit"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

@@ -9,4 +9,7 @@ COPY . .
 
 EXPOSE 3000
 
+# Compila TypeScript
+RUN npm run build
+
 CMD ["npm", "start"]
