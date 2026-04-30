@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 
@@ -45,7 +45,7 @@ describe("Functional list pagination test: GET /api/post/listPublished ", () => 
         const post = await fixtureUtils.createPost({
           title: `Post numero ${i}`,
           content: `<p>Contenuto del post numero ${i}.</p>`,
-          author: user._id,
+          author: user.id,
           status: config.POST_STATUS.PUBLISHED
         });
         posts.push(post);
@@ -58,12 +58,12 @@ describe("Functional list pagination test: GET /api/post/listPublished ", () => 
 
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
-        expect(post.author._id.toString()).to.equal(user._id.toString());
+        expect(post.author.id.toString()).to.equal(user.id.toString());
         expect(post.status).to.equal(config.POST_STATUS.PUBLISHED);
       });
       expect(res.body.data.length).to.equal(5); //verifico che abbia restituito 5 post
-      expect(res.body.page).to.equal(page.toString());
-      expect(res.body.limit).to.equal(limit.toString());
+      expect(res.body.page).to.equal(page);
+      expect(res.body.limit).to.equal(limit);
       expect(res.body.total).to.equal(25);
       expect(res.body.totalPages).to.equal(Math.ceil(25 / limit));
     });

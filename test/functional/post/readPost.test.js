@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 
@@ -34,12 +34,12 @@ describe("Functional read post test: GET /post/:postId ", () => {
   });
 
   describe("GET /api/post/:postId success", () => {
-    it("legge un post e restituisce 200 - e contenuto corretto - utente non loggato", async () => { 
+    it("legge un post published e restituisce 200 - e contenuto corretto - utente non loggato", async () => { 
       const {existingPost} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.PUBLISHED});
     
 
       const res = await request(app) 
-      .get("/api/post/" + existingPost._id);
+      .get("/api/post/" + existingPost.id);
 
       console.log(res.body); 
       expect(res.status).to.equal(200);
@@ -55,7 +55,7 @@ describe("Functional read post test: GET /post/:postId ", () => {
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.DRAFT});
       
       const res = await request(app) 
-      .get("/api/post/" + existingPost._id);
+      .get("/api/postId/" + existingPost.id);
 
       console.log("posto letto:", res.body); 
       expect(res.status).to.equal(404); //perché il post è in draft
@@ -64,7 +64,7 @@ describe("Functional read post test: GET /post/:postId ", () => {
     it("lettura post inesistente", async () => { 
 
       const res = await request(app) 
-      .get("/api/post/" + new mongoose.Types.ObjectId().toString());
+      .get("/api/postId/" + new mongoose.Types.ObjectId().toString()).auth("fakeToken", { type: "bearer" });
       console.log("posto letto:", res.body); 
       expect(res.status).to.equal(404); //perché il post è in draft
     });
@@ -72,10 +72,10 @@ describe("Functional read post test: GET /post/:postId ", () => {
     it("Post in bozza, utente loggato ma NON autore", async () => { 
       const {existingPost, token} = await fixtureUtils.createPostWithAuthorAndPayload({}, {status: config.POST_STATUS.DRAFT});
       const user2 = await fixtureUtils.createUser({username: "otheruser", email: "otheruser@example.com"});
-      const token2 = cryptoUtils.generateJWT({ userId: user2._id.toString() });
+      const token2 = cryptoUtils.generateJWT({ userId: user2.id.toString() });
       
       const res = await request(app) 
-      .get("/api/post/" + existingPost._id)
+      .get("/api/post/" + existingPost.id)
       .set("Authorization", `Bearer ${token2}`);
 
       console.log("posto letto:", res.body); 

@@ -54,13 +54,14 @@ describe("Functional verify email test: POST /api/auth/verifyEmail ", () => {
         const res = await request(app)
         .get(`/api/auth/verifyEmail?token=${verifyEmailData.token}`)
         .set("X-Forwarded-For", "9.9.9.9"); // Imposta un IP fittizio per evitare problemi con il rate limiter durante i test
-
+        
+        const storedUser = await fixtureUtils.getUserByEmail(userToStore.email); // recupera l'utente appena creato per verificare i campi dopo la verifica
         // Verifica risposta
         expect(res.status).to.equal(200);
         expect(res.body.user.status).to.equal("active");
         expect(res.body.user.email).to.equal(userToStore.email);
-        expect(res.body.user.emailVerificationToken).to.be.null;
-        expect(res.body.user.emailVerificationTokenExpiration).to.be.null;
+        expect(storedUser.emailVerificationToken).to.be.null;
+        expect(storedUser.emailVerificationTokenExpiration).to.be.null;
     });
   });
 

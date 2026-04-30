@@ -5,7 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../config/config.js";
+import config from "../../src/config/config.js";
 import ObjectId from "mongoose/lib/types/objectid.js";
 
 describe("Socket.IO + listMine post action", () => {

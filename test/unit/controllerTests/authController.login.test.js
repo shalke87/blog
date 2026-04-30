@@ -10,10 +10,10 @@ import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import { ObjectId } from "mongodb";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import AuthController from "../../../src/api/rest/controllers/AuthController.js";
-import authConfig from "../../../config/authConfig.js";
+import authConfig from "../../../src/config/authConfig.js";
 
 describe("AuthController test", () => {
-  authConfig.BCRYPT_SALT_ROUNDS = "12";
+  authConfig.BCRYPT_SALT_ROUNDS = 12;
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test

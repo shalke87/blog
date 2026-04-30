@@ -7,7 +7,7 @@ import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import fs from "fs"; 
 import path from "path";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 const avatarDir = path.join(process.cwd(), "uploads", "avatars");

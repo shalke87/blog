@@ -4,7 +4,7 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 const { ObjectId } = mongoose.Types;
 
 

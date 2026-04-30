@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 
@@ -50,7 +50,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
       expect(res.body.data.title).to.equal(newPostPayload.title);
       expect(res.body.data.content).to.equal(newPostPayload.content);
       expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
-      expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
+      expect(res.body.data.author.id).to.equal(cryptoUtils.verifyJWT(token).userId);
     });
 
     it("modifica i tag di un post - aggiunge nuovi tag e restituisce 200", async () => { 
@@ -101,7 +101,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           expect(res.body.data.title).to.equal(newPostPayload.title);
           expect(res.body.data.content).to.equal(newPostPayload.content);
           expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
-          expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
+          expect(res.body.data.author.id).to.equal(cryptoUtils.verifyJWT(token).userId);
         });
 
         it("modifica i tag di un post - passa oggetto con tags non valorizzati", async () => { 
@@ -136,7 +136,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           const tagsInDBNames = tagsInDB.map(tag => tag.name);
           const tagsInDBIds = tagsInDB.map(tag => tag._id.toString());
           console.log("Tags in DB after update:", tagsInDB);
-          console.log("Response tags names:",  res.body.tags);
+          console.log("Response tags names:",  res.body.data.tags);
                 
           const normalizedTags = [];
           normalizedTags.forEach( tag => {
@@ -152,7 +152,7 @@ describe("Functional update post test: PATCH /post/update/:postId ", () => {
           expect(res.body.data.title).to.equal(newPostPayload.title);
           expect(res.body.data.content).to.equal(newPostPayload.content);
           expect(res.body.data.status).to.equal(config.POST_STATUS.DRAFT);
-          expect(res.body.data.author._id).to.equal(cryptoUtils.verifyJWT(token).userId);
+          expect(res.body.data.author.id).to.equal(cryptoUtils.verifyJWT(token).userId);
         });
   });
 

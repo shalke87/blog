@@ -183,7 +183,7 @@ describe("Socket.IO notifications", () => {
 
   });
 
-  it.only("should not send a notification to the post author when the post is liked by themselves", (done) => {
+  it("should not send a notification to the post author when the post is liked by themselves", (done) => {
 
     const toSpy = sinon.spy(io, "to");
    

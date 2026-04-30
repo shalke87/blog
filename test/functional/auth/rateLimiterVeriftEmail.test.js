@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
-import authConfig from "../../../config/authConfig.js";
+import authConfig from "../../../src/config/authConfig.js";
 import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmailRateLimiter.js";
 
 

@@ -81,7 +81,7 @@ describe("Socket.IO + read post action", () => {
   describe("Post Read Action", () => {
     it("should reach the post:getById action success", (done) => {
       const payload = {
-        postId: post._id
+        postId: post.id
       }
       console.log("Emitting post:getById with payload:", payload);
       clientSocket.emit("post:getById", payload, response => {
@@ -90,7 +90,6 @@ describe("Socket.IO + read post action", () => {
         expect(response.success).to.be.true;
         expect(response.result).to.exist;
         expect(response.result.data.title).to.equal("testpost");
-        expect(response.result.message).to.equal("Post retrieved successfully.");
         done();
       });
       

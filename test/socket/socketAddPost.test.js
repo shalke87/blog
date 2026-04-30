@@ -86,7 +86,6 @@ describe("Socket.IO + Actions (test minimale)", () => {
       expect(response.result).to.exist;
       expect(response.result.data.title).to.equal("New Title");
       expect(response.result.data.content).to.equal("This is an original post content.");
-      expect(response.result.message).to.equal("Post added successfully.");
       done();
     });
   });

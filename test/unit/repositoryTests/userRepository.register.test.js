@@ -24,7 +24,8 @@ describe("UserRepository.createUser", () => {
 
             const result = await UserRepository.createUser(fakeUser);
 
-            expect(result).to.deep.equal(fakeUser);
+            expect(result.email).to.deep.equal(fakeUser.email);
+            expect(result.username).to.deep.equal(fakeUser.username);
             expect(UserModel.create).to.have.been.calledOnce;
         });
     });

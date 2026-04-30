@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 

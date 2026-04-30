@@ -4,7 +4,7 @@ import request from "supertest";
 import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
-import configFile from "../../../config/authConfig.js";
+import configFile from "../../../src/config/authConfig.js";
 import { verifyEmailRateLimiter } from "../../../src/api/middlewares/verifyEmailRateLimiter.js";
 
 

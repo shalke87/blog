@@ -5,7 +5,7 @@ import app from "../../../src/app.js";
 import { expect } from "chai";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
+import config from "../../../src/config/config.js";
 
 
 
@@ -39,13 +39,13 @@ describe("Functional list my posts test: GET /api/post/listMine ", () => {
       const post2 = await fixtureUtils.createPost({
         title: "Secondo post",
         content: "<p>Contenuto del secondo post.</p>",
-        author: userStored._id,
+        author: userStored.id,
         status: config.POST_STATUS.PUBLISHED
       });
       const post3 = await fixtureUtils.createPost({
         title: "Terzo post",
         content: "<p>Contenuto del terzo post.</p>",
-        author: userStored._id,
+        author: userStored.id,
         status: config.POST_STATUS.DRAFT
       });
       const posts = [];
@@ -59,7 +59,7 @@ describe("Functional list my posts test: GET /api/post/listMine ", () => {
       
       expect(res.status).to.equal(200);
       res.body.data.forEach(post => {
-        expect(post.author._id.toString()).to.equal(userStored._id.toString());
+        expect(post.author.id.toString()).to.equal(userStored.id.toString());
         expect(post.title).to.be.oneOf(posts.map(p => p.title));
       });
       expect(res.body.data).to.have.lengthOf(3);

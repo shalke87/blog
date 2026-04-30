@@ -6,7 +6,7 @@ import { expect } from "chai";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import { config } from "dotenv";
-import configFile from "../../../config/config.js";
+import configFile from "../../../src/config/config.js";
 
 
 describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
@@ -53,7 +53,7 @@ describe("Functional updatePassword test: POST /auth/updatePassword ", () => {
 
         // Verifica risposta
         expect(res.status).to.equal(200);
-        expect(res.body._id).to.equal(userStored._id.toString());
+        expect(res.body.id).to.equal(userStored._id.toString());
         expect(res.body.email).to.equal(userToStore.email);
         expect(res.body.username).to.equal(userToStore.username);
     });

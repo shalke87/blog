@@ -43,7 +43,7 @@ describe("Functional test: POST /api/auth/register con DB mockato in-memory", ()
 
         // Verifica risposta
         expect(res.status).to.equal(201);
-        expect(res.body).to.have.property("_id");
+        expect(res.body).to.have.property("id");
         expect(res.body.email).to.equal("test@example.com");
         expect(res.body).to.have.property("username", "testuser");
         expect(res.body).to.not.have.property("password");

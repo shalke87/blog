@@ -8,10 +8,9 @@ import AuthService from "../../../src/services/AuthService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import UnauthorizedError from "../../../src/domain/errors/UnauthorizedError.js";
-import authConfig from "../../../config/authConfig.js";
+import authConfig from "../../../src/config/authConfig.js";
 
 describe("UserService.login", () => {
-  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test

@@ -7,11 +7,10 @@ const { expect } = chai;
 import AuthService from "../../../src/services/AuthService.js";
 import UserRepository from "../../../src/domain/repository/UserRepository.js";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../../config/config.js";
-import authConfig from "../../../config/authConfig.js";
+import config from "../../../src/config/config.js";
+import authConfig from "../../../src/config/authConfig.js";
 
 describe("AuthService.resetPasswordRequest", () => {
-  authConfig.BCRYPT_SALT_ROUNDS = "12";
 
   afterEach(() => {
     sinon.restore(); // pulizia dopo ogni test

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import config from "../../../../../config/config.js";
+import config from "../../../config/config.js";
 
 const postSchema = Joi.object({
     title: Joi.string().min(3).max(30).required(),

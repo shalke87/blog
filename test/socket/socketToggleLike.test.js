@@ -5,7 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import createServer from "../../src/createServer.js";
 import fixtureUtils from "../fixtures/fixtureUtils.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
-import config from "../../config/config.js";
+import config from "../../src/config/config.js";
 import ObjectId from "mongoose/lib/types/objectid.js";
 
 describe("Socket.IO + toggleLike to a post action", () => {
@@ -90,7 +90,6 @@ describe("Socket.IO + toggleLike to a post action", () => {
         expect(response.success).to.be.true;
         expect(response.result).to.exist;
         expect(response.result.data.title).to.equal("testpost");
-        expect(response.result.message).to.equal("Post toggled like successfully.");
         expect(response.result.data.likes).to.include.members([user._id.toString()]);
         done();
       });

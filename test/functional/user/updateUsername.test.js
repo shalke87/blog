@@ -6,7 +6,7 @@ import { expect } from "chai";
 import cryptoUtils from "../../../src/infrastructure/security/cryptoUtils.js";
 import fixtureUtils from "../../fixtures/fixtureUtils.js";
 import { config } from "dotenv";
-import configFile from "../../../config/config.js";
+import configFile from "../../../src/config/config.js";
 
 
 describe("Functional updateUsername test: POST /auth/updateUsername ", () => {

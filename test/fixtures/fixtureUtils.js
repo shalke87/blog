@@ -7,9 +7,9 @@ import postModel from "../../src/infrastructure/database/mongoose/models/postMod
 import notificationModel from "../../src/infrastructure/database/mongoose/models/notificationModel.js";
 import cryptoUtils from "../../src/infrastructure/security/cryptoUtils.js";
 chai.use(sinonChai);
-import config from "../../config/config.js";
-import authConfig from "../../config/authConfig.js";
-
+import config from "../../src/config/config.js";
+import authConfig from "../../src/config/authConfig.js";
+import { ObjectId } from "mongoose";
 
 class fixtureUtils {
   mockResponse() {
@@ -27,6 +27,7 @@ class fixtureUtils {
   fakeMongooseDoc(data) {
     return {
       ...data,
+      _id: new ObjectId(),
       toObject() {
         return { ...data };
       }
@@ -47,9 +48,14 @@ class fixtureUtils {
     return await userModel.find();
   }
 
+  async getUserByEmail(email) {
+    return await userModel.findOne({ email });
+  }
+
   async getPosts(param = {}) {
     return await postModel.find();
   }
+
 
   async getTags(param = {}) {
     return await tagModel.find();
@@ -69,7 +75,7 @@ class fixtureUtils {
     );
 
     // Sostituisci i nomi con gli ID
-    postToStore.tags = createdTags.map(t => t._id);
+    postToStore.tags = createdTags.map(t => t.id);
 
     return await postModel.create(postToStore);
   }
@@ -83,17 +89,17 @@ class fixtureUtils {
               avatarURL: "/uploads/avatars/test_avatar.png"
             };
           const userStored = await this.createUser(userToStore);  //inserisce un utente nel DB in memoria
-          const token = cryptoUtils.generateJWT({ userId: userStored._id.toString() }); //genera un token per l'utente
+          const token = cryptoUtils.generateJWT({ userId: userStored.id.toString() }); //genera un token per l'utente
     
           
           const existingPost = await this.createPost({
             title: "Titolo originale del post",
             content: "<p>Contenuto originale del post.</p>",
             status: postData.status || config.POST_STATUS.DRAFT,
-            author: userStored._id,
+            author: userStored.id,
             tags: postData.tags || ["tag1", "tag2"],
             comments: [{
-              author: userStored._id,
+              author: userStored.id,
               text: "Commento originale"
             }]
           });
